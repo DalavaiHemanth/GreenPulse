@@ -17,4 +17,4 @@ services:
   # Redis Service
   - type: redis
     name: green-pulse-redis-v2
-    region: singapore # Optional: explicitly create in a region, or remove line to default
+    ipAllowList: [] # Required: Start with no external access (internal only)
