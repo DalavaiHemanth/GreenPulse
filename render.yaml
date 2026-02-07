@@ -3,16 +3,10 @@ services:
   - type: web
     name: green-pulse-web
     env: python
-    plan: starter # Required for persistent disk
+    plan: free
     buildCommand: pip install -r requirements.txt && chmod +x start.sh
     startCommand: ./start.sh
-    disk:
-      name: sqlite-data
-      mountPath: /data
-      sizeGB: 1
     envVars:
-      - key: DATABASE_PATH
-        value: /data/users.db
       - key: SECRET_KEY
         generateValue: true
       - key: REDIS_URL
@@ -24,5 +18,5 @@ services:
   # Redis Service
   - type: redis
     name: green-pulse-redis
+    plan: free
     ipAllowList: [] # Only allow internal connections
-    plan: free # Free tier Redis if available, or starter
