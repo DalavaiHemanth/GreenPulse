@@ -1,11 +1,11 @@
 services:
-  # Web Service (Flask App)
+  # Web Service (Flask App + Celery)
   - type: web
     name: green-pulse-web
     env: python
     plan: starter # Required for persistent disk
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
+    buildCommand: pip install -r requirements.txt && chmod +x start.sh
+    startCommand: ./start.sh
     disk:
       name: sqlite-data
       mountPath: /data
@@ -15,26 +15,6 @@ services:
         value: /data/users.db
       - key: SECRET_KEY
         generateValue: true
-      - key: REDIS_URL
-        fromService:
-          type: redis
-          name: green-pulse-redis
-          property: connectionString
-
-  # Worker Service (Celery Worker & Beat)
-  - type: worker
-    name: green-pulse-worker
-    env: python
-    plan: starter # Required for persistent disk
-    buildCommand: pip install -r requirements.txt
-    startCommand: celery -A tasks.celery_app worker --loglevel=info --beat
-    disk:
-      name: sqlite-data
-      mountPath: /data
-      sizeGB: 1
-    envVars:
-      - key: DATABASE_PATH
-        value: /data/users.db
       - key: REDIS_URL
         fromService:
           type: redis
