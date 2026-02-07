@@ -1,22 +1,20 @@
 services:
-  # Web Service (Flask App + Celery)
+  # Web Service
   - type: web
-    name: green-pulse-web
+    name: green-pulse-web-v2
     env: python
-    plan: free
-    buildCommand: pip install -r requirements.txt && chmod +x start.sh
-    startCommand: ./start.sh
+    buildCommand: pip install -r requirements.txt
+    startCommand: celery -A tasks.celery_app worker --loglevel=info --beat & gunicorn app:app
     envVars:
       - key: SECRET_KEY
         generateValue: true
       - key: REDIS_URL
         fromService:
           type: redis
-          name: green-pulse-redis
+          name: green-pulse-redis-v2
           property: connectionString
 
   # Redis Service
   - type: redis
-    name: green-pulse-redis
-    plan: free
-    ipAllowList: [] # Only allow internal connections
+    name: green-pulse-redis-v2
+    region: singapore # Optional: explicitly create in a region, or remove line to default
