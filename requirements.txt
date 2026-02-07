@@ -1,0 +1,12 @@
+Flask==2.3.3
+Werkzeug==2.3.7
+requests==2.31.0
+scikit-learn==1.2.2
+pandas==2.0.3
+numpy==1.24.3
+gunicorn==21.2.0
+pytest==7.4.3
+pytest-cov==4.1.0
+celery==5.3.6
+redis==5.0.1
+eventlet==0.33.3

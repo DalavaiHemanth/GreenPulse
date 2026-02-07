@@ -1,0 +1,33 @@
+<!-- admin_sidebar.html: Shared sidebar for all admin panel pages -->
+<nav class="w-64 bg-gradient-to-br from-green-900 via-blue-900 to-gray-900 backdrop-blur-md p-6 flex flex-col gap-4 shadow-2xl rounded-r-3xl border-r border-green-700">
+  <div class="mb-8 text-center">
+    <span class="text-3xl font-extrabold text-green-400 tracking-wide drop-shadow-lg flex items-center justify-center gap-2">
+      <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2l2 7h7l-5.5 4.5L17 21l-5-3.5L7 21l1.5-7.5L3 9h7z" /></svg>
+      Admin Panel
+    </span>
+  </div>
+  <a href="/admin_dashboard" class="py-3 px-5 rounded-xl flex items-center gap-3 font-semibold transition-all duration-200 hover:bg-green-700/60 hover:text-white sidebar-link{% if request.path == '/admin_dashboard' %} active{% endif %}">
+    <svg class="w-6 h-6 text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M13 5v6h6" /></svg>
+    Dashboard
+  </a>
+  <a href="/admin/users" class="py-3 px-5 rounded-xl flex items-center gap-3 font-semibold transition-all duration-200 hover:bg-green-700/60 hover:text-white sidebar-link{% if request.path == '/admin/users' %} active{% endif %}">
+    <svg class="w-6 h-6 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20h6M3 20h5v-2a4 4 0 013-3.87M16 3.13a4 4 0 010 7.75M8 3.13a4 4 0 010 7.75" /></svg>
+    User Management
+  </a>
+  <a href="/admin/appliances" class="py-3 px-5 rounded-xl flex items-center gap-3 font-semibold transition-all duration-200 hover:bg-green-700/60 hover:text-white sidebar-link{% if request.path == '/admin/appliances' %} active{% endif %}">
+    <svg class="w-6 h-6 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6a2 2 0 012-2h2a2 2 0 012 2v6m-6 0h6" /></svg>
+    Appliance Management
+  </a>
+  <a href="/admin/analytics" class="py-3 px-5 rounded-xl flex items-center gap-3 font-semibold transition-all duration-200 hover:bg-green-700/60 hover:text-white sidebar-link{% if request.path == '/admin/analytics' %} active{% endif %}">
+    <svg class="w-6 h-6 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17a2 2 0 002 2h6a2 2 0 002-2V7a2 2 0 00-2-2h-6a2 2 0 00-2 2v10z" /></svg>
+    Analytics
+  </a>
+  <a href="/admin/logs" class="py-3 px-5 rounded-xl flex items-center gap-3 font-semibold transition-all duration-200 hover:bg-green-700/60 hover:text-white sidebar-link{% if request.path == '/admin/logs' %} active{% endif %}">
+    <svg class="w-6 h-6 text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6a2 2 0 012-2h2a2 2 0 012 2v6m-6 0h6" /></svg>
+    System Logs
+  </a>
+  <a href="/logout" class="mt-8 py-3 px-5 rounded-xl flex items-center gap-3 font-semibold bg-red-500 hover:bg-red-600 transition-all duration-200 text-center sidebar-link{% if request.path == '/logout' %} active{% endif %}">
+    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7" /></svg>
+    Logout
+  </a>
+</nav>

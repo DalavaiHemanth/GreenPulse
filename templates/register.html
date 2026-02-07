@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Green Pulse - Register</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="https://unpkg.com/feather-icons"></script>
+  <style>
+    body { background: url("{{ url_for('static', filename='images/role_bg.jpg') }}") no-repeat center center/cover; }
+    .register-box { background: rgba(255,255,255,0.1); backdrop-filter: blur(12px); border-radius: 20px; padding: 40px; width: 400px; text-align: center; box-shadow: 0 8px 30px rgba(0,0,0,0.2); margin: auto; margin-top: 40px; }
+    .register-box h2 { color: #fff; margin-bottom: 10px; }
+    .register-box p { color: #e0ffe0; margin-bottom: 18px; font-size: 16px; }
+    .input-field { margin: 18px 0; position: relative; }
+    .input-field input, .input-field select { width: 100%; padding: 12px 15px; border: none; border-radius: 10px; background: rgba(255,255,255,0.2); color: #fff; font-size: 16px; }
+    .input-field input:focus, .input-field select:focus { background: rgba(255,255,255,0.3); outline: none; }
+    .profile-icons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 10px 0 20px 0; }
+    .profile-icon { border: 2px solid transparent; border-radius: 50%; padding: 6px; background: #fff; cursor: pointer; transition: border 0.2s; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; }
+    .profile-icon.selected { border: 2px solid #00e676; }
+    .btn { width: 100%; padding: 12px; border: none; border-radius: 12px; background: linear-gradient(135deg, #00c853, #64dd17); color: #fff; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    .btn:hover { background: linear-gradient(135deg, #64dd17, #00c853); }
+    .links { margin-top: 15px; font-size: 14px; color: #fff; }
+    .links a { color: #00e676; text-decoration: none; }
+    .links a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="register-box">
+    <h2>Green Pulse</h2>
+    <p>Create your account</p>
+    {% if error %}
+      <div style="color:#ff5252; margin-bottom:10px;">{{ error }}</div>
+    {% endif %}
+    <form action="/register" method="POST" onsubmit="return selectProfileIcon()">
+      <div class="input-field">
+        <input type="email" name="gmail" placeholder="Gmail ID" required>
+      </div>
+      <div class="input-field">
+        <input type="text" name="username" placeholder="Username" required>
+      </div>
+      <div class="input-field" style="margin-bottom:0;">
+        <input type="password" id="password" name="password" placeholder="Password" required>
+        <span class="toggle-password" id="toggle-icon" onclick="togglePassword()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:#fff;font-size:18px;">👁️</span>
+      </div>
+      <div class="input-field">
+        <button type="button" class="btn" style="padding:8px 12px;width:auto;font-size:13px;" onclick="detectLocation()">Detect My Location</button>
+      </div>
+      <div class="input-field">
+        <input type="text" id="location" name="location" placeholder="Detected Location" readonly required style="background:rgba(255,255,255,0.3);color:#fff;">
+      </div>
+      <div style="color:#fff; margin-bottom:6px;">Select Profile Icon</div>
+      <div class="profile-icons" id="profileIcons">
+        <div class="profile-icon" onclick="chooseIcon(this)"><img src="static/icons/icon1.png" alt="icon1" width="32"></div>
+        <div class="profile-icon" onclick="chooseIcon(this)"><img src="static/icons/icon2.png" alt="icon2" width="32"></div>
+        <div class="profile-icon" onclick="chooseIcon(this)"><img src="static/icons/icon3.png" alt="icon3" width="32"></div>
+        <div class="profile-icon" onclick="chooseIcon(this)"><img src="static/icons/icon4.png" alt="icon4" width="32"></div>
+        <div class="profile-icon" onclick="chooseIcon(this)"><img src="static/icons/icon5.png" alt="icon5" width="32"></div>
+        <div class="profile-icon" onclick="chooseIcon(this)"><img src="static/icons/icon6.png" alt="icon6" width="32"></div>
+        <div class="profile-icon" onclick="chooseIcon(this)"><img src="static/icons/icon7.png" alt="icon7" width="32"></div>
+        <div class="profile-icon" onclick="chooseIcon(this)"><img src="static/icons/icon8.png" alt="icon8" width="32"></div>
+        <div class="profile-icon" onclick="chooseIcon(this)"><img src="static/icons/icon9.png" alt="icon9" width="32"></div>
+        <div class="profile-icon" onclick="chooseIcon(this)"><img src="static/icons/icon10.png" alt="icon10" width="32"></div>
+      </div>
+      <input type="hidden" name="profile_icon" id="profileIconInput" required>
+      <button type="submit" class="btn">Register</button>
+    </form>
+    <div class="links">
+  <a href="{{ url_for('login') }}">Already have an account? Login</a>
+    </div>
+  </div>
+  <script>
+    // Geolocation and reverse geocoding
+    async function detectLocation() {
+      if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser.');
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(async function success(position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        try {
+          const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1`);
+          const data = await resp.json();
+          const address = data.address;
+          let locationStr = '';
+          if(address.road) locationStr += address.road + ', ';
+          if(address.suburb) locationStr += address.suburb + ', ';
+          if(address.city) locationStr += address.city + ', ';
+          else if(address.town) locationStr += address.town + ', ';
+          else if(address.village) locationStr += address.village + ', ';
+          if(address.state_district) locationStr += address.state_district + ', ';
+          if(address.county) locationStr += address.county + ', ';
+          if(address.state) locationStr += address.state + ', ';
+          if(address.country) locationStr += address.country;
+          locationStr = locationStr.replace(/, $/, '');
+          document.getElementById('location').value = locationStr;
+        } catch (e) {
+          alert('Could not detect location.');
+        }
+      }, function error() {
+        alert('Unable to retrieve your location.');
+      });
+    }
+    function togglePassword() {
+      const pwd = document.getElementById('password');
+      const icon = document.getElementById('toggle-icon');
+      if (pwd.type === 'password') {
+        pwd.type = 'text';
+        icon.textContent = '🙈';
+      } else {
+        pwd.type = 'password';
+        icon.textContent = '👁️';
+      }
+    }
+    function chooseIcon(el) {
+      document.querySelectorAll('.profile-icon').forEach(e => e.classList.remove('selected'));
+      el.classList.add('selected');
+      document.getElementById('profileIconInput').value = el.querySelector('img').getAttribute('src');
+    }
+    function selectProfileIcon() {
+      if (!document.getElementById('profileIconInput').value) {
+        alert('Please select a profile icon.');
+        return false;
+      }
+      return true;
+    }
+  </script>
+</body>
+</html>

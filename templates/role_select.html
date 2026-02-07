@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GreenPulse - Role Selection</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body class="h-screen flex items-center justify-center bg-cover bg-center" 
+      style="background-image: url('static/images/role_bg.jpg');">
+
+  <!-- Role Selection Box -->
+  <div class="bg-white/20 backdrop-blur-lg p-10 rounded-2xl shadow-xl w-full max-w-md animate-fadeIn">
+    
+    <!-- Title -->
+    <h1 class="text-4xl font-bold text-center text-white mb-6">GreenPulse</h1>
+    <h2 class="text-xl font-semibold text-center text-white mb-6">Select Role</h2>
+
+
+
+    <div class="space-y-5">
+      <!-- Admin Button -->
+      <button type="button"
+        onclick="window.location.href='{{ url_for('admin_login') }}'"
+        class="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-green-500 hover:bg-green-600 text-white font-semibold shadow-md transition transform hover:scale-105">
+        <i data-feather="shield"></i> Admin
+      </button>
+      <!-- User Button -->
+      <button type="button"
+        onclick="window.location.href='{{ url_for('login') }}'"
+        class="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-semibold shadow-md transition transform hover:scale-105">
+        <i data-feather="user"></i> User
+      </button>
+    </div>
+  </div>
+
+  <script>
+    feather.replace();
+  </script>
+
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 0.8s ease-out;
+    }
+  </style>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Admin Dashboard - Green Pulse</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<style>
+		.sidebar-link {
+			position: relative;
+			overflow: hidden;
+		}
+		.sidebar-link.active {
+			background: linear-gradient(90deg, #22c55e 0%, #2563eb 100%);
+			color: #fff !important;
+			box-shadow: 0 2px 12px 0 rgba(34,197,94,0.15);
+		}
+		.sidebar-link::before {
+			content: "";
+			position: absolute;
+			left: 0; top: 0; bottom: 0;
+			width: 4px;
+			background: #22c55e;
+			opacity: 0;
+			transition: opacity 0.3s;
+		}
+		.sidebar-link.active::before {
+			opacity: 1;
+		}
+		.sidebar-link:hover {
+			transform: scale(1.04);
+			box-shadow: 0 4px 16px 0 rgba(34,197,94,0.10);
+		}
+	</style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-green-900 to-blue-900 min-h-screen text-white font-sans">
+	<div class="flex min-h-screen">
+		<!-- Sidebar -->
+
+		<nav class="w-64 bg-gradient-to-br from-green-900 via-blue-900 to-gray-900 backdrop-blur-md p-6 flex flex-col gap-4 shadow-2xl rounded-r-3xl border-r border-green-700">
+			<div class="mb-8 text-center">
+				<span class="text-3xl font-extrabold text-green-400 tracking-wide drop-shadow-lg flex items-center justify-center gap-2">
+					<svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2l2 7h7l-5.5 4.5L17 21l-5-3.5L7 21l1.5-7.5L3 9h7z" /></svg>
+					Admin Panel
+				</span>
+			</div>
+				<a href="/admin_dashboard" class="py-3 px-5 rounded-xl flex items-center gap-3 font-semibold transition-all duration-200 hover:bg-green-700/60 hover:text-white sidebar-link{% if request.path == '/admin_dashboard' %} active{% endif %}">
+				<svg class="w-6 h-6 text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M13 5v6h6" /></svg>
+				Dashboard
+			</a>
+				<a href="/admin/users" class="py-3 px-5 rounded-xl flex items-center gap-3 font-semibold transition-all duration-200 hover:bg-green-700/60 hover:text-white sidebar-link{% if request.path == '/admin/users' %} active{% endif %}">
+				<svg class="w-6 h-6 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20h6M3 20h5v-2a4 4 0 013-3.87M16 3.13a4 4 0 010 7.75M8 3.13a4 4 0 010 7.75" /></svg>
+				User Management
+			</a>
+				<a href="/admin/appliances" class="py-3 px-5 rounded-xl flex items-center gap-3 font-semibold transition-all duration-200 hover:bg-green-700/60 hover:text-white sidebar-link{% if request.path == '/admin/appliances' %} active{% endif %}">
+				<svg class="w-6 h-6 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6a2 2 0 012-2h2a2 2 0 012 2v6m-6 0h6" /></svg>
+				Appliance Management
+			</a>
+				<a href="/admin/analytics" class="py-3 px-5 rounded-xl flex items-center gap-3 font-semibold transition-all duration-200 hover:bg-green-700/60 hover:text-white sidebar-link{% if request.path == '/admin/analytics' %} active{% endif %}">
+				<svg class="w-6 h-6 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17a2 2 0 002 2h6a2 2 0 002-2V7a2 2 0 00-2-2h-6a2 2 0 00-2 2v10z" /></svg>
+				Analytics
+			</a>
+				<a href="/admin/logs" class="py-3 px-5 rounded-xl flex items-center gap-3 font-semibold transition-all duration-200 hover:bg-green-700/60 hover:text-white sidebar-link{% if request.path == '/admin/logs' %} active{% endif %}">
+				<svg class="w-6 h-6 text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6a2 2 0 012-2h2a2 2 0 012 2v6m-6 0h6" /></svg>
+				System Logs
+			</a>
+				<a href="/" class="py-3 px-5 rounded-xl flex items-center gap-3 font-semibold transition-all duration-200 hover:bg-green-700/60 hover:text-white sidebar-link{% if request.path == '/' %} active{% endif %}">
+				<svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M13 5v6h6" /></svg>
+				User View
+			</a>
+				<a href="/logout" class="mt-8 py-3 px-5 rounded-xl flex items-center gap-3 font-semibold bg-red-500 hover:bg-red-600 transition-all duration-200 text-center sidebar-link{% if request.path == '/logout' %} active{% endif %}">
+				<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7" /></svg>
+				Logout
+			</a>
+		</nav>
+		<!-- Main Content -->
+		<main class="flex-1 p-8">
+			<h1 class="text-3xl font-bold text-green-300 mb-6">Admin Dashboard</h1>
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+				<div class="bg-white/10 rounded-xl p-6 shadow-md text-center">
+					<div class="text-4xl font-bold text-green-300">{{ user_count or 0 }}</div>
+					<div class="text-lg text-gray-200 mt-2">Total Users</div>
+				</div>
+				<div class="bg-white/10 rounded-xl p-6 shadow-md text-center">
+					<div class="text-4xl font-bold text-green-300">{{ appliance_count or 0 }}</div>
+					<div class="text-lg text-gray-200 mt-2">Total Appliances</div>
+				</div>
+				<div class="bg-white/10 rounded-xl p-6 shadow-md text-center">
+					<div class="text-4xl font-bold text-green-300">{{ log_count or 0 }}</div>
+					<div class="text-lg text-gray-200 mt-2">System Logs</div>
+				</div>
+			</div>
+			<div class="bg-white/10 rounded-xl p-6 shadow-md">
+				<h2 class="text-xl font-semibold text-green-200 mb-4">Recent Users</h2>
+				<table class="w-full text-left text-gray-100">
+					<thead>
+						<tr>
+							<th class="py-2">Gmail</th>
+							<th class="py-2">Username</th>
+							<th class="py-2">Role</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for user in recent_users %}
+						<tr class="border-b border-gray-700">
+							<td class="py-2">{{ user.gmail }}</td>
+							<td class="py-2">{{ user.username }}</td>
+							<td class="py-2">{{ user.role }}</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</main>
+	</div>
+</body>
+</html>

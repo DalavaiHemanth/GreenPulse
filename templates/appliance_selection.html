@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Select Home Appliances - Green Pulse</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+    .tooltip {
+      position: relative;
+      cursor: help;
+    .tooltip:hover .tooltip-text {
+      visibility: visible;
+    }
+  </style>
+  </head>
+<body class="bg-gradient-to-br from-blue-900 via-green-900 to-blue-800 min-h-screen text-white font-sans p-4">
+    <div class="max-w-4xl mx-auto bg-white/10 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-green-700 mt-8">
+      <h1 class="text-4xl font-extrabold text-green-300 mb-2 text-center drop-shadow-lg tracking-wide">Select Your Home Appliances</h1>
+      <p class="text-base text-green-200 mb-8 text-center">Choose the appliances you use at home and adjust their quantity and wattage for accurate energy tracking.</p>
+      <form method="POST" class="space-y-10">
+        <!-- Kitchen Appliances -->
+        <section class="border border-green-600 rounded-lg p-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for appliance in appliances if appliance.name in ['Refrigerator', 'Microwave Oven', 'Dishwasher', 'Toaster', 'Mixer Grinder'] %}
+            <div class="bg-white/5 border border-green-700 rounded-xl p-5 flex flex-col gap-2 shadow-lg hover:shadow-green-400/20 transition">
+              <label for="appliance_{{ appliance.id }}" class="block text-green-200 font-semibold text-lg mb-1 tracking-wide">{{ appliance.name }}</label>
+              <div class="flex gap-4">
+                <div class="flex flex-col">
+                  <span class="text-xs text-gray-300 mb-1">Qty</span>
+                  <input type="number" min="0" max="10" name="appliance_{{ appliance.id }}" id="appliance_{{ appliance.id }}" placeholder="0"
+                    value="{{ prefill[appliance.name.lower()].count if prefill[appliance.name.lower()] else 0 }}"
+                    aria-label="{{ appliance.name }} quantity"
+                    class="w-16 px-3 py-2 rounded-lg bg-transparent border border-green-400 text-white placeholder-green-400 focus:outline-none focus:ring-2 focus:ring-green-400" />
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-xs text-gray-300 mb-1">Wattage</span>
+                  <input type="number" min="0" step="0.1" name="watts_{{ appliance.id }}" id="watts_{{ appliance.id }}" 
+                    value="{{ prefill[appliance.name.lower()].watts if prefill[appliance.name.lower()] else appliance.default_watts }}"
+                    aria-label="{{ appliance.name }} wattage"
+                    class="w-28 px-3 py-2 rounded-lg bg-transparent border border-green-400 text-white placeholder-green-400 focus:outline-none focus:ring-2 focus:ring-green-400" />
+                </div>
+              </div>
+              <div class="whitespace-nowrap text-green-400 text-xs mt-1">Default: <span class="font-medium">{{ appliance.default_watts }} W</span></div>
+            </div>
+            {% endfor %}
+          </div>
+        </section>
+
+  <!-- Cooling Devices -->
+  <section class="border border-green-600 rounded-lg p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h2 class="text-2xl font-bold text-green-300 tracking-wide">Cooling Devices</h2>
+            <p class="text-xs text-green-200">Adjust based on how many and their actual power draw.</p>
+          </div>
+          <div class="text-xs text-green-200 bg-green-800/40 px-2 py-1 rounded-lg">Fan vs AC wattage differs widely; edit to reflect real usage.</div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {% for appliance in appliances if appliance.name in ['Air Conditioner', 'Ceiling Fan', 'Room Heater', 'Water Heater'] %}
+          <div class="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-4">
+            <div class="bg-white/5 border border-green-700 rounded-xl p-5 flex flex-col gap-2 shadow-lg hover:shadow-green-400/20 transition">
+              <label for="appliance_{{ appliance.id }}" class="block text-green-200 font-semibold text-lg mb-1 tracking-wide">{{ appliance.name }}</label>
+              <div class="flex gap-4">
+                <div class="flex flex-col">
+                  <span class="text-xs text-gray-300 mb-1">Qty</span>
+                  <input type="number" min="0" max="10" name="appliance_{{ appliance.id }}" id="appliance_{{ appliance.id }}" placeholder="0"
+                    value="{{ prefill[appliance.name.lower()].count if prefill[appliance.name.lower()] else 0 }}"
+                    aria-label="{{ appliance.name }} quantity"
+                    class="w-16 px-3 py-2 rounded-lg bg-transparent border border-green-400 text-white placeholder-green-400 focus:outline-none focus:ring-2 focus:ring-green-400" />
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-xs text-gray-300 mb-1">Wattage</span>
+                  <input type="number" min="0" step="0.1" name="watts_{{ appliance.id }}" id="watts_{{ appliance.id }}" 
+                    value="{{ prefill[appliance.name.lower()].watts if prefill[appliance.name.lower()] else appliance.default_watts }}"
+                    aria-label="{{ appliance.name }} wattage"
+                    class="w-28 px-3 py-2 rounded-lg bg-transparent border border-green-400 text-white placeholder-green-400 focus:outline-none focus:ring-2 focus:ring-green-400" />
+                </div>
+              </div>
+              <div class="whitespace-nowrap text-green-400 text-xs mt-1">Default: <span class="font-medium">{{ appliance.default_watts }} W</span></div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- Entertainment Devices -->
+      <section class="border border-green-600 rounded-lg p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h2 class="text-2xl font-bold text-green-300 tracking-wide">Entertainment Devices</h2>
+            <p class="text-xs text-green-200">Set quantity and tweak wattage if needed.</p>
+          </div>
+          <div class="text-xs text-green-200 bg-green-800/40 px-2 py-1 rounded-lg">Devices like TV and PC have varying draw depending on usage mode.</div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {% for appliance in appliances if appliance.name in ['Television', 'Laptop', 'Desktop Computer'] %}
+          <div class="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-4">
+            <div class="bg-white/5 border border-green-700 rounded-xl p-5 flex flex-col gap-2 shadow-lg hover:shadow-green-400/20 transition">
+              <label for="appliance_{{ appliance.id }}" class="block text-green-200 font-semibold text-lg mb-1 tracking-wide">{{ appliance.name }}</label>
+              <div class="flex gap-4">
+                <div class="flex flex-col">
+                  <span class="text-xs text-gray-300 mb-1">Qty</span>
+                  <input type="number" min="0" max="10" name="appliance_{{ appliance.id }}" id="appliance_{{ appliance.id }}" placeholder="0"
+                    value="{{ prefill[appliance.name.lower()].count if prefill[appliance.name.lower()] else 0 }}"
+                    aria-label="{{ appliance.name }} quantity"
+                    class="w-16 px-3 py-2 rounded-lg bg-transparent border border-green-400 text-white placeholder-green-400 focus:outline-none focus:ring-2 focus:ring-green-400" />
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-xs text-gray-300 mb-1">Wattage</span>
+                  <input type="number" min="0" step="0.1" name="watts_{{ appliance.id }}" id="watts_{{ appliance.id }}" 
+                    value="{{ prefill[appliance.name.lower()].watts if prefill[appliance.name.lower()] else appliance.default_watts }}"
+                    aria-label="{{ appliance.name }} wattage"
+                    class="w-28 px-3 py-2 rounded-lg bg-transparent border border-green-400 text-white placeholder-green-400 focus:outline-none focus:ring-2 focus:ring-green-400" />
+                </div>
+              </div>
+              <div class="whitespace-nowrap text-green-400 text-xs mt-1">Default: <span class="font-medium">{{ appliance.default_watts }} W</span></div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- Other Appliances -->
+      <section class="border border-green-600 rounded-lg p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h2 class="text-2xl font-bold text-green-300 tracking-wide">Other Appliances</h2>
+            <p class="text-xs text-green-200">Any appliance not covered above.</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {% for appliance in appliances if appliance.name not in ['Refrigerator', 'Microwave Oven', 'Dishwasher', 'Toaster', 'Mixer Grinder', 'Air Conditioner', 'Ceiling Fan', 'Room Heater', 'Water Heater', 'Television', 'Laptop', 'Desktop Computer'] %}
+          <div class="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-4">
+            <div class="bg-white/5 border border-green-700 rounded-xl p-5 flex flex-col gap-2 shadow-lg hover:shadow-green-400/20 transition">
+              <label for="appliance_{{ appliance.id }}" class="block text-green-200 font-semibold text-lg mb-1 tracking-wide" title="{{ appliance.name }}">{{ appliance.name }}</label>
+              <div class="flex gap-4">
+                <div class="flex flex-col">
+                  <span class="text-xs text-gray-300 mb-1">Qty</span>
+                  <input type="number" min="0" max="10" name="appliance_{{ appliance.id }}" id="appliance_{{ appliance.id }}" placeholder="0"
+                    value="{{ prefill[appliance.name.lower()].count if prefill[appliance.name.lower()] else 0 }}"
+                    aria-label="{{ appliance.name }} quantity"
+                    class="w-16 px-3 py-2 rounded-lg bg-transparent border border-green-400 text-white placeholder-green-400 focus:outline-none focus:ring-2 focus:ring-green-400" />
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-xs text-gray-300 mb-1">Wattage</span>
+                  <input type="number" min="0" step="0.1" name="watts_{{ appliance.id }}" id="watts_{{ appliance.id }}" 
+                    value="{{ prefill[appliance.name.lower()].watts if prefill[appliance.name.lower()] else appliance.default_watts }}"
+                    aria-label="{{ appliance.name }} wattage"
+                    class="w-28 px-3 py-2 rounded-lg bg-transparent border border-green-400 text-white placeholder-green-400 focus:outline-none focus:ring-2 focus:ring-green-400" />
+                </div>
+              </div>
+              <div class="whitespace-nowrap text-green-400 text-xs mt-1">Default: <span class="font-medium">{{ appliance.default_watts }} W</span></div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <div class="mt-8 text-center space-y-4">
+        <button type="button" onclick="window.location.href='/login'" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transition transform hover:scale-105">
+          Go to Login
+        </button>
+        <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transition transform hover:scale-105">
+          Next
+        </button>
+      </div>
+    </form>
+  </div>
+</body>

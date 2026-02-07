@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block nav %}{% endblock %}
+{% block main_class %}{% endblock %}
+{% block content %}
+<div class="flex min-h-screen">
+  {% include 'admin_sidebar.html' %}
+  <div class="flex-1">
+    <div class="max-w-6xl mx-auto py-10 px-4">
+      <h2 class="text-4xl font-extrabold text-green-400 mb-8 drop-shadow-lg">Appliance Management</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+        <!-- User Appliances Card -->
+        <div class="bg-white/10 rounded-2xl shadow-xl p-8">
+          <h3 class="text-2xl font-bold text-blue-300 mb-6 flex items-center gap-2">
+            <svg class="w-7 h-7 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6a2 2 0 012-2h2a2 2 0 012 2v6m-6 0h6" /></svg>
+            All User Appliances
+          </h3>
+          <form method="get" class="mb-6 flex flex-wrap gap-4 items-end">
+            <input type="text" name="q" value="{{ q }}" placeholder="Search by user, email, or appliance" class="px-4 py-2 rounded-lg bg-gray-800/60 border border-blue-400 text-white w-full md:w-1/2" />
+            <button type="submit" class="bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded-lg font-semibold shadow">Search</button>
+          </form>
+          <div class="overflow-x-auto rounded-xl">
+            <table class="w-full text-left text-gray-100 bg-white/10 rounded-xl shadow">
+              <thead>
+                <tr class="bg-blue-900/40">
+                  <th class="py-3 px-4">ID</th>
+                  <th class="py-3 px-4">User Email</th>
+                  <th class="py-3 px-4">Username</th>
+                  <th class="py-3 px-4">Appliance</th>
+                  <th class="py-3 px-4">Count</th>
+                  <th class="py-3 px-4">Watts</th>
+                  <th class="py-3 px-4">Status</th>
+                  <th class="py-3 px-4">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for a in appliances %}
+                <tr class="border-b border-blue-800/30 hover:bg-blue-900/10 transition">
+                  <td class="py-2 px-4">{{ a.id }}</td>
+                  <td class="py-2 px-4">{{ a.gmail }}</td>
+                  <td class="py-2 px-4">{{ a.username }}</td>
+                  <td class="py-2 px-4">{{ a.name }}</td>
+                  <td class="py-2 px-4">{{ a.count }}</td>
+                  <td class="py-2 px-4">{{ a.watts }}</td>
+                  <td class="py-2 px-4">{% if a.is_on %}<span class="text-green-400 font-bold">On</span>{% else %}<span class="text-gray-400 font-bold">Off</span>{% endif %}</td>
+                  <td class="py-2 px-4">
+                    <form method="post" action="{{ url_for('admin_remove_user_appliance', appliance_id=a.id) }}" style="display:inline;">
+                      <button type="submit" class="bg-red-500 hover:bg-red-700 px-3 py-1 rounded shadow text-white font-semibold text-xs" onclick="return confirm('Remove this appliance from user?')">Remove</button>
+                    </form>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- Global Appliances Card -->
+        <div class="bg-white/10 rounded-2xl shadow-xl p-8">
+          <h3 class="text-2xl font-bold text-green-300 mb-6 flex items-center gap-2">
+            <svg class="w-7 h-7 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6a2 2 0 012-2h2a2 2 0 012 2v6m-6 0h6" /></svg>
+            Global Appliance List
+          </h3>
+          <form method="post" action="{{ url_for('admin_add_global_appliance') }}" class="flex flex-wrap gap-4 mb-6 items-end">
+            <input type="text" name="name" placeholder="Appliance Name" class="px-4 py-2 rounded-lg bg-gray-800/60 border border-green-400 text-white w-full md:w-1/2" required />
+            <input type="number" name="watts" placeholder="Default Watts" class="px-4 py-2 rounded-lg bg-gray-800/60 border border-green-400 text-white w-full md:w-1/2" required min="1" />
+            <button type="submit" class="bg-green-500 hover:bg-green-600 px-6 py-2 rounded-lg font-semibold shadow">Add Appliance</button>
+          </form>
+          <div class="overflow-x-auto rounded-xl">
+            <table class="w-full text-left text-gray-100 bg-white/10 rounded-xl shadow">
+              <thead>
+                <tr class="bg-green-900/40">
+                  <th class="py-3 px-4">ID</th>
+                  <th class="py-3 px-4">Name</th>
+                  <th class="py-3 px-4">Default Watts</th>
+                  <th class="py-3 px-4">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for g in global_appliances %}
+                <tr class="border-b border-green-800/30 hover:bg-green-900/10 transition">
+                  <td class="py-2 px-4">{{ g.id }}</td>
+                  <td class="py-2 px-4">{{ g.name }}</td>
+                  <td class="py-2 px-4">{{ g.default_watts }}</td>
+                  <td class="py-2 px-4">
+                    <form method="post" action="{{ url_for('admin_remove_global_appliance', appliance_id=g.id) }}" style="display:inline;">
+                      <button type="submit" class="bg-red-500 hover:bg-red-700 px-3 py-1 rounded shadow text-white font-semibold text-xs" onclick="return confirm('Remove this global appliance?')">Remove</button>
+                    </form>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

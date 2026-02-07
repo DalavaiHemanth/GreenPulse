@@ -1,0 +1,128 @@
+/* General Styles */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #fff;
+    color: #333;
+    scroll-behavior: smooth;
+}
+
+.about-container {
+    width: 100%;
+}
+
+/* Section Styles */
+section {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 50px 20px;
+    box-sizing: border-box;
+}
+
+.hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/static/images/ab2_bg.jpg') no-repeat center center/cover;
+    color: white;
+}
+
+.hero-content h1 {
+    font-size: 4rem;
+    font-weight: 600;
+}
+
+.hero-content p {
+    font-size: 1.5rem;
+    font-weight: 300;
+}
+
+.mission-section {
+    background-color: #f4f7f6;
+}
+
+.mission-content h2 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.mission-content p {
+    font-size: 1.2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.team-section {
+    background-color: #fff;
+}
+
+.team-container {
+    display: flex;
+    gap: 20px;
+}
+
+.admin-card {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    padding: 30px;
+    width: 300px;
+    transition: transform 0.3s ease;
+}
+
+.admin-card:hover {
+    transform: translateY(-10px);
+}
+
+.admin-card img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+}
+
+.admin-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.team-nav button {
+    background-color: #333;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 20px 10px 0;
+}
+
+.skills-section {
+    background-color: #f4f7f6;
+}
+
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.skill-card {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* Animation Styles */
+.animate-on-scroll {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.animate-on-scroll.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}

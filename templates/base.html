@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>{% block title %}Green Pulse{% endblock %}</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+		<script src="https://cdn.tailwindcss.com"></script>
+		<style>
+			@keyframes fadeIn {
+				from { opacity: 0; transform: translateY(20px); }
+				to { opacity: 1; transform: translateY(0); }
+			}
+			@keyframes fadeOut {
+				from { opacity: 1; transform: scale(1); }
+				to { opacity: 0; transform: scale(0.95); }
+			}
+			.animate-fadeIn {
+				animation: fadeIn 0.6s ease forwards;
+			}
+			.animate-fadeOut {
+				animation: fadeOut 0.4s ease forwards;
+			}
+			.opacity-0 {
+				opacity: 0;
+			}
+		</style>
+</head>
+<body class="bg-gradient-to-br from-blue-900 via-green-900 to-blue-800 min-h-screen text-white font-sans">
+	   <!-- Navigation Bar -->
+	   {% block nav %}
+	   <nav class="fixed top-0 left-0 right-0 z-50 bg-green-900 shadow-xl rounded-b-2xl py-2 px-8 flex items-center justify-between border-b border-green-800">
+		  <div class="flex items-center gap-3">
+			  <span class="text-xl font-extrabold text-green-300 tracking-wide drop-shadow">Green Pulse</span>
+		  </div>
+	   <div class="flex items-center gap-2 md:gap-4">
+		   {% set path = request.path %}
+		   <a href="/dashboard" class="nav-link {% if path.startswith('/dashboard') %}active{% endif %}"><i class="fas fa-chart-pie mr-1"></i>Dashboard</a>
+		   <a href="/profile" class="nav-link {% if path.startswith('/profile') %}active{% endif %}"><i class="fas fa-user-circle mr-1"></i>Profile</a>
+		   <a href="/appliances" class="nav-link {% if path.startswith('/appliances') %}active{% endif %}"><i class="fas fa-plug mr-1"></i>Appliances</a>
+		   <a href="/weekly_analysis" class="nav-link {% if path.startswith('/weekly_analysis') %}active{% endif %}"><i class="fas fa-calendar-week mr-1"></i>Weekly Analysis</a>
+		   <a href="/my_consumption" class="nav-link {% if path.startswith('/my_consumption') %}active{% endif %}"><i class="fas fa-bolt mr-1"></i>My Consumption</a>
+		   <a href="/alarm" class="nav-link {% if path.startswith('/alarm') %}active{% endif %}"><i class="fas fa-bell mr-1"></i>Alarm</a>
+		   <a href="/power_goals" class="nav-link {% if path.startswith('/power_goals') %}active{% endif %}"><i class="fas fa-flag-checkered mr-1"></i>Power Goals</a>
+		   <a href="/about" class="nav-link {% if path.startswith('/about') %}active{% endif %}"><i class="fas fa-info-circle mr-1"></i>About</a>
+		   <a href="/logout" class="nav-link logout"><i class="fas fa-sign-out-alt mr-1"></i>Logout</a>
+	   </div>
+	   </nav>
+	   {% endblock %}
+<style>
+	nav {
+		transition: box-shadow 0.3s, background 0.3s;
+	}
+	.nav-link {
+		display: flex;
+		align-items: center;
+		padding: 0.5rem 1.1rem;
+		border-radius: 1.2rem;
+		font-weight: 600;
+		color: #d1fae5;
+		background: transparent;
+		transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
+		box-shadow: none;
+		position: relative;
+		outline: none;
+	}
+	.nav-link:hover, .nav-link:focus {
+		background: linear-gradient(90deg, #059669 0%, #10b981 100%);
+		color: #fff;
+		box-shadow: 0 2px 12px 0 rgba(16,185,129,0.10);
+		transform: translateY(-2px) scale(1.04);
+		text-shadow: 0 1px 4px #05966944;
+	}
+	.nav-link.active {
+		background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+		color: #fff;
+		box-shadow: 0 4px 16px 0 rgba(16,185,129,0.18);
+		font-weight: 700;
+		text-shadow: 0 2px 8px #10b98133;
+	}
+	.nav-link.logout {
+		color: #f87171;
+		background: transparent;
+		font-weight: 700;
+	}
+	.nav-link.logout:hover {
+		background: linear-gradient(90deg, #f87171 0%, #ef4444 100%);
+		color: #fff;
+		box-shadow: 0 2px 12px 0 rgba(239,68,68,0.10);
+		text-shadow: 0 1px 4px #ef444444;
+	}
+</style>
+<main class="{% block main_class %}pt-16{% endblock %}">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="container mx-auto px-4 py-2">
+          {% for category, message in messages %}
+            <div class="bg-{{ 'green' if category == 'success' else 'red' }}-500/80 text-white p-4 rounded-lg shadow-lg animate-fadeIn" role="alert">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+		{% block content %}{% endblock %}
+	</main>
+</body>
+</html>

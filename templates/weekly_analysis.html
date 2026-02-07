@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+{% block title %}Weekly Analysis - Green Pulse{% endblock %}
+{% block content %}
+<div class="container mx-auto p-4 md:p-8">
+    <div class="bg-gray-900/50 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden">
+        <div class="p-6 md:p-8">
+            <div class="flex justify-between items-center mb-4">
+                <a href="{{ url_for('weekly_analysis', date=prev_week_date) }}" class="bg-gray-700/50 hover:bg-gray-600/50 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i> Prev Week
+                </a>
+                <div class="text-center">
+                    <h1 class="text-3xl font-bold text-green-300 tracking-wider">Weekly Energy Analysis</h1>
+                    <p class="text-green-100/70 text-lg">{{ month_label }}</p>
+                </div>
+                {% if not is_next_week_in_future %}
+                <a href="{{ url_for('weekly_analysis', date=next_week_date) }}" class="bg-gray-700/50 hover:bg-gray-600/50 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+                    Next Week <i class="fas fa-arrow-right ml-2"></i>
+                </a>
+                {% else %}
+                <span class="bg-gray-800/50 text-gray-500 font-bold py-2 px-4 rounded-lg cursor-not-allowed">
+                    Next Week <i class="fas fa-arrow-right ml-2"></i>
+                </span>
+                {% endif %}
+            </div>
+            <p class="text-center text-green-100/70 mb-8">Visualize your weekly consumption and dive into daily details.</p>
+
+            <!-- Chart and Stats -->
+            <div class="grid md:grid-cols-3 gap-8 items-center">
+                <!-- Stats Section -->
+                <div class="md:col-span-1 flex flex-col gap-4">
+                    <div class="bg-green-500/10 rounded-xl p-4 text-center">
+                        <p class="text-sm text-green-200/80">Total This Week</p>
+                        <p class="text-3xl font-bold text-white">{{ '%.2f'|format(daily_usage|sum) }} <span class="text-lg font-medium">kWh</span></p>
+                    </div>
+                    <div class="bg-red-500/10 rounded-xl p-4 text-center">
+                        <p class="text-sm text-red-200/80">Highest Day</p>
+                        <p class="text-3xl font-bold text-white">{{ '%.2f'|format(daily_usage|max) }} <span class="text-lg font-medium">kWh</span></p>
+                    </div>
+                    <div class="bg-blue-500/10 rounded-xl p-4 text-center">
+                        <p class="text-sm text-blue-200/80">Lowest Day</p>
+                        <p class="text-3xl font-bold text-white">{{ '%.2f'|format(daily_usage|min) }} <span class="text-lg font-medium">kWh</span></p>
+                    </div>
+                </div>
+                <!-- Chart Section -->
+                <div class="md:col-span-2 bg-gray-900/40 rounded-2xl p-6">
+                    <div class="relative h-80"> <!-- Set a fixed height for the chart container -->
+                        <canvas id="weeklyChart"></canvas>
+                    </div>
+                    <div class="flex justify-center gap-4 mt-4 text-sm text-gray-300">
+                        <div class="flex items-center gap-2"><span class="inline-block w-3 h-3 rounded-full bg-green-500"></span> Low Usage</div>
+                        <div class="flex items-center gap-2"><span class="inline-block w-3 h-3 rounded-full bg-blue-500"></span> Avg Usage</div>
+                        <div class="flex items-center gap-2"><span class="inline-block w-3 h-3 rounded-full bg-red-500"></span> High Usage</div>
+                    </div>
+                    <p class="text-center text-gray-400 mt-3 text-xs">Tip: Click a bar to view appliance details for that day.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Details Table -->
+        <div class="bg-gray-900/60 p-6 md:p-8 mt-4">
+            <h2 class="text-2xl font-semibold text-green-300 mb-4 flex items-center gap-3">
+                <i class="fas fa-clipboard-list"></i>
+                Details for: <span class="text-white font-bold">{{ selected_day }}</span>
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-left">
+                    <thead class="border-b-2 border-green-400/30">
+                        <tr>
+                            <th class="py-3 px-4 text-sm font-bold uppercase tracking-wider text-green-300">Appliance</th>
+                            <th class="py-3 px-4 text-sm font-bold uppercase tracking-wider text-green-300 text-center">Hours On</th>
+                            <th class="py-3 px-4 text-sm font-bold uppercase tracking-wider text-green-300 text-right">Energy (kWh)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in details %}
+                        <tr class="border-b border-gray-700/50 hover:bg-green-500/10 transition-colors duration-200">
+                            <td class="py-3 px-4 font-medium text-white">{{ d['appliance_name'] }}</td>
+                            <td class="py-3 px-4 text-center text-gray-200">{{ '%.2f'|format(d['hours_on']) }}</td>
+                            <td class="py-3 px-4 text-right font-mono text-green-300">{{ '%.2f'|format(d['energy_kwh']) }}</td>
+                        </tr>
+                        {% endfor %}
+                        {% if not details %}
+                        <tr>
+                            <td colspan="3" class="text-center text-gray-400 py-8">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                No consumption data recorded for this day.
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const ctx = document.getElementById('weeklyChart').getContext('2d');
+        const weekLabels = {{ week_dates|tojson }};
+        const usageData = {{ daily_usage|tojson }};
+
+        const avgVal = usageData.reduce((a, b) => a + b, 0) / usageData.length;
+        const highThreshold = avgVal * 1.25;
+        const lowThreshold = avgVal * 0.75;
+
+        const barColors = usageData.map(v => {
+            if (v >= highThreshold) return 'rgba(239, 68, 68, 0.7)'; // Red
+            if (v <= lowThreshold) return 'rgba(34, 197, 94, 0.7)'; // Green
+            return 'rgba(59, 130, 246, 0.7)'; // Blue
+        });
+        
+        const borderColors = usageData.map(v => {
+            if (v >= highThreshold) return 'rgba(239, 68, 68, 1)';
+            if (v <= lowThreshold) return 'rgba(34, 197, 94, 1)';
+            return 'rgba(59, 130, 246, 1)';
+        });
+
+        const chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: weekLabels,
+                datasets: [{
+                    label: 'Total kWh',
+                    data: usageData,
+                    backgroundColor: barColors,
+                    borderColor: borderColors,
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                onClick: (e, els) => {
+                    if (els.length > 0) {
+                        const idx = els[0].index;
+                        const day = weekLabels[idx];
+                        const currentUrl = new URL(window.location.href);
+                        currentUrl.searchParams.set('day', day);
+                        window.location.href = currentUrl.toString();
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        enabled: true,
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        padding: 12,
+                        cornerRadius: 8,
+                        callbacks: {
+                            title: (context) => 'Date: ' + context[0].label,
+                            label: (context) => `Usage: ${context.parsed.y.toFixed(2)} kWh`,
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        ticks: { color: '#a0aec0' },
+                        title: { display: true, text: 'kWh', color: '#a0aec0' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#a0aec0' },
+                        title: { display: true, text: 'Day of the Week', color: '#a0aec0' }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

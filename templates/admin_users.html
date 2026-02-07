@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - User Management</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-green-900 to-blue-900 min-h-screen text-white font-sans">
+  <div class="flex min-h-screen">
+  {% include 'admin_sidebar.html' %}
+    <main class="flex-1 p-8">
+      <h1 class="text-3xl font-bold text-green-300 mb-6">User Management</h1>
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="mb-4 text-green-300">{{ messages[0] }}</div>
+        {% endif %}
+      {% endwith %}
+      <form method="get" class="mb-6 flex flex-wrap gap-4 items-end">
+        <input type="text" name="q" value="{{ q }}" placeholder="Search name or Gmail" class="px-4 py-2 rounded-lg bg-gray-800/60 border border-green-500 text-white" />
+        <select name="role" class="px-4 py-2 rounded-lg bg-gray-800/60 border border-green-500 text-white">
+          <option value="">All Roles</option>
+          <option value="user" {% if role=='user' %}selected{% endif %}>User</option>
+          <option value="admin" {% if role=='admin' %}selected{% endif %}>Admin</option>
+        </select>
+        <select name="active" class="px-4 py-2 rounded-lg bg-gray-800/60 border border-green-500 text-white">
+          <option value="">All Status</option>
+          <option value="1" {% if active=='1' %}selected{% endif %}>Active</option>
+          <option value="0" {% if active=='0' %}selected{% endif %}>Deactivated</option>
+        </select>
+        <button type="submit" class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg font-semibold">Filter</button>
+      </form>
+      <table class="w-full text-left text-gray-100 bg-white/10 rounded-xl">
+        <thead>
+          <tr>
+            <th class="py-2 px-4">Gmail</th>
+            <th class="py-2 px-4">Username</th>
+            <th class="py-2 px-4">Role</th>
+            <th class="py-2 px-4">Join Date</th>
+            <th class="py-2 px-4">Last Login</th>
+            <th class="py-2 px-4">Status</th>
+            <th class="py-2 px-4">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+          <tr class="border-b border-gray-700">
+            <td class="py-2 px-4">{{ user.gmail }}</td>
+            <td class="py-2 px-4">{{ user.username }}</td>
+            <td class="py-2 px-4">{{ user.role }}</td>
+            <td class="py-2 px-4">{{ user.join_date or '' }}</td>
+            <td class="py-2 px-4">{{ user.last_login or '' }}</td>
+            <td class="py-2 px-4">{% if user.is_active %}<span class="text-green-400">Active</span>{% else %}<span class="text-red-400">Deactivated</span>{% endif %}</td>
+            <td class="py-2 px-4 flex flex-wrap gap-2">
+              <a href="/admin/edit_user/{{ user.id }}" class="bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded">Edit</a>
+              <form method="post" action="/admin/delete_user/{{ user.id }}" onsubmit="return confirm('Delete this user?');" style="display:inline;">
+                <button class="bg-red-500 hover:bg-red-700 px-3 py-1 rounded">Delete</button>
+              </form>
+              <form method="post" action="/admin/toggle_role/{{ user.id }}" style="display:inline;">
+                <button class="bg-blue-500 hover:bg-blue-700 px-3 py-1 rounded">Toggle Role</button>
+              </form>
+              {% if user.is_active %}
+              <form method="post" action="/admin/deactivate_user/{{ user.id }}" style="display:inline;">
+                <button class="bg-gray-500 hover:bg-gray-700 px-3 py-1 rounded">Deactivate</button>
+              </form>
+              {% else %}
+              <form method="post" action="/admin/reactivate_user/{{ user.id }}" style="display:inline;">
+                <button class="bg-green-700 hover:bg-green-800 px-3 py-1 rounded">Reactivate</button>
+              </form>
+              {% endif %}
+              <a href="/admin/login_history/{{ user.id }}" class="bg-indigo-500 hover:bg-indigo-700 px-3 py-1 rounded">Login History</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </main>
+  </div>
+</body>
+</html>

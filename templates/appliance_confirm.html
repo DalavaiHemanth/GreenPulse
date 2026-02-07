@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Confirm Appliances - Green Pulse</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-900 via-green-900 to-blue-800 min-h-screen text-white font-sans p-4">
+  <div class="max-w-3xl mx-auto bg-white/10 backdrop-blur-md rounded-2xl p-8 shadow-lg mt-10">
+    <h1 class="text-3xl font-bold text-green-400 mb-2 text-center">Confirm Your Appliances</h1>
+    <p class="text-sm text-gray-300 mb-6 text-center">Review your selected appliances. You can edit or confirm to proceed.</p>
+    <form method="POST" class="space-y-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white/10 rounded-lg">
+          <thead>
+            <tr class="text-green-300 text-left">
+              <th class="py-2 px-4">Appliance</th>
+              <th class="py-2 px-4">Count</th>
+              <th class="py-2 px-4">Wattage (W)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in selected_appliances %}
+            <tr class="border-b border-green-700 hover:bg-green-900/30">
+              <td class="py-2 px-4 font-semibold">{{ item.name }}</td>
+              <td class="py-2 px-4">{{ item.count }}</td>
+              <td class="py-2 px-4">{{ item.watts }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="flex flex-col md:flex-row justify-center gap-6 mt-8">
+        <button type="button" onclick="window.location.href='{{ url_for('appliance_selection') }}'" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transition transform hover:scale-105">Edit</button>
+        <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transition transform hover:scale-105">Confirm</button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

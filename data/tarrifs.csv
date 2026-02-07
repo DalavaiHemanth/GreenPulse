@@ -1,0 +1,76 @@
+state,category,slab_start_kwh,slab_end_kwh,rate_inr_per_kwh,fixed_charge_inr_per_month,tax_percent,effective_from,notes,source_url
+Andhra Pradesh,Domestic LT,0,30.0,1.9,10.0,,2024-04-01,Telescopic slabs; fixed charge per connection.,https://aperc.gov.in/page/Tariff_Orders
+Andhra Pradesh,Domestic LT,31,75.0,3.0,10.0,,2024-04-01,,https://aperc.gov.in/page/Tariff_Orders
+Andhra Pradesh,Domestic LT,76,100.0,4.8,10.0,,2024-04-01,,https://aperc.gov.in/page/Tariff_Orders
+Andhra Pradesh,Domestic LT,101,200.0,5.6,10.0,,2024-04-01,,https://aperc.gov.in/page/Tariff_Orders
+Andhra Pradesh,Domestic LT,201,300.0,7.1,10.0,,2024-04-01,,https://aperc.gov.in/page/Tariff_Orders
+Andhra Pradesh,Domestic LT,301,400.0,8.1,10.0,,2024-04-01,,https://aperc.gov.in/page/Tariff_Orders
+Andhra Pradesh,Domestic LT,401,600.0,9.75,10.0,,2024-04-01,Above 600 often at same rate; verify in latest order.,https://aperc.gov.in/page/Tariff_Orders
+Andhra Pradesh,Domestic LT,601,,9.75,10.0,,2024-04-01,Continues same rate above 600 units (to be verified).,https://aperc.gov.in/page/Tariff_Orders
+Delhi,Domestic,0,200.0,3.0,,,2024-04-01,DERC/BRPL/BYPL/TPDDL slabs vary by provider and subsidy; includes PPAC adjustments.,https://www.derc.gov.in/
+Delhi,Domestic,201,400.0,5.0,,,2024-04-01,,https://www.derc.gov.in/
+Delhi,Domestic,401,800.0,6.5,,,2024-04-01,,https://www.derc.gov.in/
+Delhi,Domestic,801,1200.0,7.0,,,2024-04-01,,https://www.derc.gov.in/
+Delhi,Domestic,1201,,8.0,,,2024-04-01,,https://www.derc.gov.in/
+Maharashtra,Domestic LT,0,100.0,3.0,,,2024-04-01,MSEDCL and urban discoms have different slabs; confirm per discom.,https://www.mahadiscom.in/consumer/en/tariff-details/
+Maharashtra,Domestic LT,101,200.0,6.0,,,2024-04-01,,https://www.mahadiscom.in/consumer/en/tariff-details/
+Maharashtra,Domestic LT,201,300.0,8.0,,,2024-04-01,,https://www.mahadiscom.in/consumer/en/tariff-details/
+Maharashtra,Domestic LT,301,,9.0,,,2024-04-01,,https://www.mahadiscom.in/consumer/en/tariff-details/
+Tamil Nadu,Domestic LT,0,100.0,3.5,,,2024-07-01,Refer TNERC T.O. No.6 of 2024.,https://www.tnerc.tn.gov.in/Orders/
+Tamil Nadu,Domestic LT,101,200.0,5.5,,,2024-07-01,,https://www.tnerc.tn.gov.in/Orders/
+Tamil Nadu,Domestic LT,201,,7.5,,,2024-07-01,,https://www.tnerc.tn.gov.in/Orders/
+Karnataka,Domestic LT,0,100.0,3.0,,,2024-04-01,"Verify per ESCOM (BESCOM, MESCOM, HESCOM etc.).",https://kerc.karnataka.gov.in/
+Karnataka,Domestic LT,101,200.0,5.0,,,2024-04-01,,https://kerc.karnataka.gov.in/
+Karnataka,Domestic LT,201,,6.5,,,2024-04-01,,https://kerc.karnataka.gov.in/
+Telangana,Domestic LT,0,100.0,2.5,,,2024-04-01,Check TSPCC/TSTRANSCO orders for exact slabs.,https://tssouthernpower.com/
+Telangana,Domestic LT,101,300.0,5.5,,,2024-04-01,,https://tssouthernpower.com/
+Telangana,Domestic LT,301,,8.0,,,2024-04-01,,https://tssouthernpower.com/
+Gujarat,Domestic LT,0,100.0,3.0,,,2024-04-01,Gujarat electricity tariffs vary across DISCOMs; verify per source.,https://gercin.org/
+Gujarat,Domestic LT,101,300.0,6.0,,,2024-04-01,,https://gercin.org/
+Gujarat,Domestic LT,301,,8.0,,,2024-04-01,,https://gercin.org/
+Kerala,Domestic LT,0,100.0,3.5,,,2024-04-01,KSEB tariff orders; check for lifeline subsidies.,https://kseb.in/
+Kerala,Domestic LT,101,200.0,5.5,,,2024-04-01,,https://kseb.in/
+Kerala,Domestic LT,201,,7.5,,,2024-04-01,,https://kseb.in/
+West Bengal,Domestic LT,0,100.0,3.0,,,2024-04-01,WBSEDCL tariff chart 2024-25.,https://wberc.gov.in/
+West Bengal,Domestic LT,101,300.0,6.0,,,2024-04-01,,https://wberc.gov.in/
+West Bengal,Domestic LT,301,,8.0,,,2024-04-01,,https://wberc.gov.in/
+Rajasthan,Domestic LT,0,100.0,2.5,,,2024-04-01,Verify detailed slab limits in JVVNL order.,https://energy.rajasthan.gov.in/
+Rajasthan,Domestic LT,101,300.0,5.0,,,2024-04-01,,https://energy.rajasthan.gov.in/
+Rajasthan,Domestic LT,301,,7.5,,,2024-04-01,,https://energy.rajasthan.gov.in/
+Uttar Pradesh,Domestic LT,0,100.0,3.0,,,2024-04-01,UPERC/UPPCL tariffs; verify exact blocks.,https://www.upenergy.in/
+Uttar Pradesh,Domestic LT,101,300.0,6.0,,,2024-04-01,,https://www.upenergy.in/
+Uttar Pradesh,Domestic LT,301,,8.0,,,2024-04-01,,https://www.upenergy.in/
+Punjab,Domestic LT,0,100.0,4.0,,,2024-04-01,Punjab state tariffs.,https://pserc.gov.in/
+Punjab,Domestic LT,101,200.0,6.0,,,2024-04-01,,https://pserc.gov.in/
+Punjab,Domestic LT,201,,7.5,,,2024-04-01,,https://pserc.gov.in/
+Haryana,Domestic LT,0,100.0,3.0,,,2024-04-01,HERC / local discoms,https://herc.gov.in/
+Haryana,Domestic LT,101,300.0,5.5,,,2024-04-01,,https://herc.gov.in/
+Haryana,Domestic LT,301,,7.0,,,2024-04-01,,https://herc.gov.in/
+Odisha,Domestic LT,0,100.0,2.5,,,2024-04-01,Verify with OERC orders.,https://www.orierc.org/
+Odisha,Domestic LT,101,300.0,5.0,,,2024-04-01,,https://www.orierc.org/
+Odisha,Domestic LT,301,,7.5,,,2024-04-01,,https://www.orierc.org/
+Bihar,Domestic LT,0,100.0,2.5,,,2024-04-01,Check BESCOM/utility orders,https://bserc.bihar.gov.in/
+Bihar,Domestic LT,101,,6.0,,,2024-04-01,,https://bserc.bihar.gov.in/
+Assam,Domestic LT,0,100.0,2.5,,,2024-04-01,AERC tariffs; verify.,https://aerc.gov.in/
+Assam,Domestic LT,101,,6.0,,,2024-04-01,,https://aerc.gov.in/
+Jharkhand,Domestic LT,0,100.0,3.0,,,2024-04-01,JERC/Jharkhand tariff orders,https://jercuts.gov.in/
+Jharkhand,Domestic LT,101,,6.0,,,2024-04-01,,https://jercuts.gov.in/
+Chhattisgarh,Domestic LT,0,100.0,2.5,,,2024-04-01,CERC/ state orders,https://cgerc.org/
+Chhattisgarh,Domestic LT,101,,6.0,,,2024-04-01,,https://cgerc.org/
+Himachal Pradesh,Domestic LT,0,100.0,2.5,,,2024-04-01,HPERC tariff orders,http://hperc.org/
+Himachal Pradesh,Domestic LT,101,,5.0,,,2024-04-01,,http://hperc.org/
+Uttarakhand,Domestic LT,0,100.0,3.0,,,2024-04-01,UERC slab structure,https://uerc.gov.in/
+Uttarakhand,Domestic LT,101,,6.0,,,2024-04-01,,https://uerc.gov.in/
+Goa,Domestic LT,0,100.0,2.5,,,2024-04-01,Goa electricity tariffs,https://www.gseb.goa.gov.in/
+Goa,Domestic LT,101,,6.0,,,2024-04-01,,https://www.gseb.goa.gov.in/
+Puducherry,Domestic LT,0,100.0,3.0,,,2024-04-01,Verify with local utility,https://www.edpuducherry.in/
+Chandigarh,Domestic LT,0,100.0,3.0,,,2024-04-01,VERIFY with utility,https://chdedc.gov.in/
+Jammu & Kashmir,Domestic LT,0,100.0,2.5,,,2024-04-01,Verify with J&K DISCOM/Regulator,https://jkrelectricity.nic.in/
+Ladakh,Domestic LT,0,100.0,2.5,,,2024-04-01,Verify with UT admin,https://ladakh.nic.in/
+Andaman & Nicobar Islands,Domestic LT,0,100.0,3.0,,,2024-04-01,Verify with utility,https://andaman.gov.in/
+Lakshadweep,Domestic LT,0,100.0,3.0,,,2024-04-01,Verify with UT admin,https://lakshadweep.gov.in/
+Manipur,Domestic LT,0,100.0,2.5,,,2024-04-01,NE/State ERC,https://manipur.gov.in/
+Meghalaya,Domestic LT,0,100.0,2.5,,,2024-04-01,NE/State ERC,https://megpserc.nic.in/
+Nagaland,Domestic LT,0,100.0,2.5,,,2024-04-01,NE/State ERC,https://nagaland.gov.in/
+Tripura,Domestic LT,0,100.0,2.5,,,2024-04-01,NE/State ERC,https://tripura.gov.in/
+Sikkim,Domestic LT,0,100.0,2.5,,,2024-04-01,NE/State ERC,https://sikkim.gov.in/

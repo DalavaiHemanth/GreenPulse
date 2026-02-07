@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Analytics</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-green-900 to-blue-900 min-h-screen text-white font-sans">
+  <div class="flex min-h-screen">
+  {% include 'admin_sidebar.html' %}
+    <main class="flex-1 p-8">
+      <h1 class="text-3xl font-bold text-green-300 mb-6">Analytics</h1>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <section class="bg-white/10 rounded-xl p-6 shadow-md">
+          <h2 class="text-xl font-semibold text-green-200 mb-2">Total Energy Usage (Last 7 Days)</h2>
+          <canvas id="usageChart" height="80"></canvas>
+        </section>
+        <section class="bg-white/10 rounded-xl p-6 shadow-md">
+          <h2 class="text-xl font-semibold text-green-200 mb-2">Top 5 Appliances by kWh</h2>
+          <table class="w-full text-left text-gray-100">
+            <thead>
+              <tr>
+                <th class="py-2">Appliance</th>
+                <th class="py-2">Total kWh</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in top_appliances %}
+              <tr class="border-b border-gray-700">
+                <td class="py-2">{{ row['appliance_name'] }}</td>
+                <td class="py-2">{{ '%.2f'|format(row['total_kwh']) }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </section>
+      </div>
+      <!-- Custom Appliance Requests Table -->
+      <section class="bg-white/10 rounded-xl p-6 shadow-md mb-8">
+        <h2 class="text-xl font-semibold text-green-200 mb-4">Custom Appliance Requests</h2>
+        <p class="mb-4 text-yellow-300">These appliances were requested by users and are not in the global appliance list. Please add them manually to the global list below if appropriate.</p>
+        <table class="w-full text-left text-gray-100">
+          <thead>
+            <tr>
+              <th class="py-2">ID</th>
+              <th class="py-2">User Gmail</th>
+              <th class="py-2">Appliance Name</th>
+              <th class="py-2">Watts</th>
+              <th class="py-2">Requested At</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for req in custom_requests %}
+            <tr class="border-b border-gray-700">
+              <td class="py-2">{{ req['id'] }}</td>
+              <td class="py-2">{{ req['gmail'] }}</td>
+              <td class="py-2">{{ req['appliance_name'] }}</td>
+              <td class="py-2">{{ req['watts'] }}</td>
+              <td class="py-2">{{ req['created_at'] }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="py-2 text-center text-gray-400">No custom appliance requests.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+  <script>
+    const weekDates = {{ week_dates|tojson|safe }};
+    const dailyTotals = {{ daily_totals|tojson|safe }};
+    const ctx = document.getElementById('usageChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: weekDates,
+        datasets: [{
+          label: 'Total kWh',
+          data: dailyTotals,
+          backgroundColor: 'rgba(16, 185, 129, 0.3)',
+          borderColor: 'rgba(16, 185, 129, 1)',
+          borderWidth: 2,
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { color: '#fff' },
+            grid: { color: 'rgba(255,255,255,0.1)' }
+          },
+          x: {
+            ticks: { color: '#fff' },
+            grid: { color: 'rgba(255,255,255,0.1)' }
+          }
+        },
+        plugins: {
+          legend: { labels: { color: '#fff' } }
+        }
+      }
+    });
+  </script>
+    </main>
+  </div>
+</body>
+</html>

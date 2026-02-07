@@ -1,0 +1,20 @@
+.widget {
+    background-image: linear-gradient(to top right, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    transition: transform 0.3s ease;
+}
+
+.widget:hover {
+    transform: translateY(-10px);
+}
+
+.widget h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #f0f0f0;
+}

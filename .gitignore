@@ -1,0 +1,8 @@
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+redis/
+*.log
+celerybeat-schedule*
+*.pid

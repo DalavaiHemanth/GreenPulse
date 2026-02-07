@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}Alarms - Green Pulse{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-4 md:p-8">
+    <div class="text-center mb-10">
+        <h1 class="text-4xl font-bold text-green-300 tracking-wider">Appliance Timers</h1>
+        <p class="text-green-100/70 mt-2">Set a timer to remind you when to turn off an appliance.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Left Column: Set Alarm -->
+        <div class="md:col-span-1">
+            <div class="bg-gray-900/50 backdrop-blur-xl rounded-3xl shadow-2xl p-6 sticky top-24">
+                <h2 class="text-2xl font-semibold text-white mb-4 flex items-center"><i class="fas fa-stopwatch mr-3 text-blue-400"></i>Set a New Alarm</h2>
+                <form method="post" class="space-y-6">
+                    <div>
+                        <label for="appliance_name" class="block text-sm font-medium text-gray-300 mb-2">Appliance</label>
+                        <select id="appliance_name" name="appliance_name" required class="w-full px-4 py-3 rounded-lg bg-gray-800/60 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="" disabled selected>Select an appliance</option>
+                            {% for a in appliances %}
+                            <option value="{{ a }}">{{ a }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="minutes" class="block text-sm font-medium text-gray-300 mb-2">Timer Duration (in minutes)</label>
+                        <input id="minutes" type="number" name="minutes" min="1" value="30" required class="w-full px-4 py-3 rounded-lg bg-gray-800/60 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors text-lg">Set Timer</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right Column: Active Alarms -->
+        <div class="md:col-span-2">
+            <div class="bg-gray-900/50 backdrop-blur-xl rounded-3xl shadow-2xl p-6">
+                <h2 class="text-2xl font-semibold text-white mb-4 flex items-center"><i class="fas fa-bell mr-3 text-green-400"></i>Active & Recent Alarms</h2>
+                <div class="space-y-4">
+                    {% if alarms %}
+                        {% for alarm in alarms %}
+                        <div class="alarm-card p-4 rounded-2xl flex items-center justify-between transition-all duration-300 {% if alarm['notified'] %}bg-gray-800/50 opacity-60{% else %}bg-green-900/40{% endif %}" data-end-time="{{ alarm['end_time'] }}" data-notified="{{ alarm['notified'] }}">
+                            <div>
+                                <p class="font-bold text-lg text-white">{{ alarm['appliance_name'] }}</p>
+                                <p class="text-sm text-gray-300 countdown-text">Ends at: {{ alarm['end_time'][:16].replace('T',' ') }}</p>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="status-badge text-sm font-bold px-3 py-1 rounded-full"></div>
+                                <form method="post" class="m-0">
+                                    <input type="hidden" name="remove_id" value="{{ alarm['id'] }}">
+                                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold w-10 h-10 rounded-full flex items-center justify-center transition-colors"><i class="fas fa-times"></i></button>
+                                </form>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-12">
+                            <i class="fas fa-bell-slash fa-3x text-gray-500"></i>
+                            <p class="mt-4 text-gray-400">You have no active alarms.</p>
+                            <p class="text-sm text-gray-500">Use the form on the left to set a new timer.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const alarmCards = document.querySelectorAll('.alarm-card');
+
+    function updateTimers() {
+        alarmCards.forEach(card => {
+            const endTime = new Date(card.dataset.endTime);
+            const isNotified = card.dataset.notified === '1';
+            const countdownText = card.querySelector('.countdown-text');
+            const statusBadge = card.querySelector('.status-badge');
+
+            if (isNotified) {
+                countdownText.textContent = `Ended on ${endTime.toLocaleString()}`;
+                statusBadge.textContent = 'Completed';
+                statusBadge.className = 'status-badge text-sm font-bold px-3 py-1 rounded-full bg-red-500/30 text-red-300';
+                card.classList.add('bg-gray-800/50', 'opacity-60');
+                card.classList.remove('bg-green-900/40');
+                return;
+            }
+
+            const now = new Date();
+            const diff = endTime - now;
+
+            if (diff <= 0) {
+                countdownText.textContent = 'Ending now...';
+                statusBadge.textContent = 'Completing';
+                statusBadge.className = 'status-badge text-sm font-bold px-3 py-1 rounded-full bg-yellow-500/30 text-yellow-300';
+                // The backend will eventually mark it as notified, and the page will refresh.
+                return;
+            }
+
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            let remaining = '';
+            if (hours > 0) remaining += `${hours}h `;
+            if (minutes > 0) remaining += `${minutes}m `;
+            if (seconds >= 0) remaining += `${seconds}s `;
+
+            countdownText.textContent = `${remaining.trim()} remaining`;
+            statusBadge.textContent = 'Active';
+            statusBadge.className = 'status-badge text-sm font-bold px-3 py-1 rounded-full bg-green-500/30 text-green-300';
+        });
+    }
+
+    if (alarmCards.length > 0) {
+        updateTimers(); // Initial call
+        setInterval(updateTimers, 1000); // Update every second
+    }
+});
+</script>
+{% endblock %}

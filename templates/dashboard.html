@@ -1,0 +1,517 @@
+  <script>
+    // Auto-refresh weather widget every 10 minutes (600000 ms)
+    async function updateWeatherWidget() {
+      try {
+        const res = await axios.get('/api/weather');
+        const weather = res.data;
+        document.getElementById('weather-icon').src = weather.icon;
+        document.getElementById('weather-temp').textContent = weather.temp_c + '°C, ' + weather.desc;
+        document.getElementById('weather-location').textContent = weather.location;
+      } catch (err) {
+        // Optionally log error
+      }
+    }
+    setInterval(updateWeatherWidget, 600000); // 10 minutes
+  </script>
+  <script>
+    // Auto-refresh chart data every 30 seconds
+    setInterval(async () => {
+      try {
+        const usageRes = await axios.get('/api/usage_data');
+        const usage = usageRes.data;
+        // Update all chart data
+        hourlyChart.data.datasets[0].data = usage.hourly_usage;
+        hourlyChart.update();
+        weeklyChart.data.labels = usage.week_dates;
+        weeklyChart.data.datasets[0].data = usage.daily_usage;
+        weeklyChart.update();
+        yearlyChart.data.datasets[0].data = usage.monthly_usage;
+        yearlyChart.update();
+        if (typeof monthlyGrowthChart !== 'undefined') {
+          monthlyGrowthChart.data.datasets[0].data = usage.monthly_growth;
+          monthlyGrowthChart.update();
+        }
+      } catch (err) {
+        // Optionally log error
+      }
+    }, 30000); // 30 seconds
+  </script>
+{% extends "base.html" %}
+{% block title %}Dashboard - Green Pulse{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <div class="container mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Overuse Alert Widget -->
+      <section class="widget md:col-span-2 {% if overuse_alert.status == 'critical' %}bg-red-900/80 border-2 border-red-500{% elif overuse_alert.status == 'warning' %}bg-yellow-900/80 border-2 border-yellow-500{% else %}bg-green-900/50 border border-green-600{% endif %} p-6 rounded-2xl shadow-lg">
+        <div class="flex justify-between items-start">
+          <div>
+            <h2 class="text-2xl font-bold text-white mb-2 flex items-center">
+              {% if overuse_alert.status == 'critical' %}
+                <i class="fas fa-exclamation-circle text-red-400 mr-3 animate-pulse"></i> Critical Alert
+              {% elif overuse_alert.status == 'warning' %}
+                <i class="fas fa-exclamation-triangle text-yellow-300 mr-3 animate-pulse"></i> Warning
+              {% else %}
+                <i class="fas fa-check-circle text-green-400 mr-3"></i> All Systems Normal
+              {% endif %}
+            </h2>
+            <p class="text-lg {% if overuse_alert.status == 'critical' %}text-red-200{% elif overuse_alert.status == 'warning' %}text-yellow-200{% else %}text-green-200{% endif %}">{{ overuse_alert.message }}</p>
+          </div>
+          {% if overuse_alert.status != 'normal' and overuse_alert.usage is defined and overuse_alert.threshold is defined %}
+            <div class="text-right">
+                <div class="text-sm text-gray-300">Current Usage</div>
+                <div class="text-2xl font-bold text-white">{{ overuse_alert.usage }} kWh</div>
+                <div class="text-xs text-gray-400">Threshold: {{ overuse_alert.threshold }} kWh</div>
+            </div>
+          {% endif %}
+        </div>
+
+        {% if overuse_alert.status != 'normal' %}
+          <div class="mt-4 pt-4 border-t border-gray-700/50">
+            {% if overuse_alert.appliance %}
+              <div class="flex items-center bg-gray-800/50 p-3 rounded-lg">
+                <i class="fas fa-plug-circle-bolt text-xl text-cyan-400 mr-3"></i>
+                <div>
+                  <p class="text-sm text-gray-300">Suspected Appliance</p>
+                  <p class="font-semibold text-white">{{ overuse_alert.appliance }}</p>
+                </div>
+              </div>
+            {% endif %}
+            
+            {% if overuse_alert.hint %}
+              <div class="mt-3">
+                <p class="text-sm font-semibold text-gray-200 mb-1"><i class="fas fa-lightbulb mr-2"></i>Suggestion</p>
+                <p class="text-gray-300">{{ overuse_alert.hint }}</p>
+              </div>
+            {% endif %}
+
+            <div class="mt-4 text-center">
+              <a href="{{ url_for('appliances') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
+                Manage Appliances
+              </a>
+            </div>
+          </div>
+        {% endif %}
+      </section>
+      <!-- Weather Widget as a single unit -->
+      <section class="widget col-span-1 md:col-span-2 flex items-center gap-8 bg-gradient-to-br from-blue-900/90 to-blue-800/70 border border-blue-700 shadow-2xl rounded-3xl p-8 mb-2 transition-transform duration-500 hover:scale-105 animate-fade-in-up relative overflow-hidden">
+        <img id="weather-icon" src="{{ weather.icon }}" alt="Weather Icon" class="w-20 h-20 mr-6">
+        <div>
+          <h2 class="text-2xl font-bold text-blue-100 mb-1 flex items-center"><i class="fas fa-cloud-sun mr-2"></i>Weather</h2>
+          <div id="weather-temp" class="text-xl text-white">{{ weather.temp_c }}°C, {{ weather.desc }}</div>
+          <div id="weather-location" class="text-base text-gray-300">{{ weather.location }}</div>
+          {% if weather_warning %}
+            <div class="mt-2 p-2 bg-red-600/80 text-white rounded-lg text-sm font-semibold">{{ weather_warning }}</div>
+          {% endif %}
+        </div>
+  <style>
+    /* ...existing styles... */
+  </style>
+      </section>
+  <style>
+    @keyframes fade-in-up {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in-up {
+      animation: fade-in-up 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    @keyframes fade-in {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+    .animate-fade-in {
+      animation: fade-in 1.2s ease;
+    }
+    @keyframes weather-bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px) scale(1.05); }
+    }
+    .animate-weather-bounce {
+      animation: weather-bounce 2.5s infinite cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    }
+    @keyframes spin-slow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .animate-spin-slow {
+      animation: spin-slow 12s linear infinite;
+    }
+    .widget {
+      box-shadow: 0 4px 32px 0 rgba(16,185,129,0.10), 0 1.5px 4px 0 rgba(0,0,0,0.10);
+    }
+  </style>
+      <!-- Tips Row: Energy Tip and Environment Tip side by side -->
+      <div class="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <section class="widget relative overflow-hidden animate-fade-in-up bg-gradient-to-br from-green-800/80 to-green-900/60 border border-green-600 shadow-xl rounded-2xl p-6 mb-2 transition-transform duration-500 hover:scale-105">
+          <div class="absolute -top-6 -right-6 opacity-30 animate-spin-slow">
+            <i class="fas fa-lightbulb text-7xl text-yellow-300 drop-shadow-lg"></i>
+          </div>
+          <h2 class="text-xl font-bold text-green-100 mb-3 flex items-center gap-2">
+            <i class="fas fa-bolt text-yellow-300 animate-bounce"></i> Energy Tip
+          </h2>
+          <div class="text-lg text-white font-medium animate-fade-in">{{ energy_tip }}</div>
+        </section>
+        <section class="widget relative overflow-hidden animate-fade-in-up bg-gradient-to-br from-emerald-800/80 to-emerald-900/60 border border-emerald-600 shadow-xl rounded-2xl p-6 mb-2 transition-transform duration-500 hover:scale-105">
+          <div class="absolute -top-6 -right-6 opacity-30 animate-spin-slow">
+            <i class="fas fa-leaf text-7xl text-green-300 drop-shadow-lg"></i>
+          </div>
+          <h2 class="text-xl font-bold text-green-100 mb-3 flex items-center gap-2">
+            <i class="fas fa-seedling text-green-300 animate-bounce"></i> Environment Tip
+          </h2>
+          <div class="text-lg text-white font-medium animate-fade-in">{{ env_tip }}</div>
+        </section>
+      </div>
+      <!-- Daily Usage Chart Widget -->
+      <section class="widget col-span-1 md:col-span-2">
+        <h2 class="text-xl font-semibold text-green-200 mb-2 flex items-center"><i class="fas fa-chart-bar mr-2"></i>Daily Usage</h2>
+        <canvas id="hourlyChart" height="80"></canvas>
+      </section>
+      <!-- Weekly Usage Chart Widget -->
+      <section class="widget col-span-1 md:col-span-2">
+        <h2 class="text-xl font-semibold text-green-200 mb-2 flex items-center"><i class="fas fa-chart-area mr-2"></i>Weekly Usage</h2>
+        <canvas id="weeklyChart" height="80"></canvas>
+      </section>
+      <!-- Yearly Usage Chart Widget -->
+      <section class="widget col-span-1 md:col-span-2">
+        <h2 class="text-xl font-semibold text-green-200 mb-2 flex items-center"><i class="fas fa-chart-line mr-2"></i>Yearly Usage</h2>
+        <canvas id="yearlyChart" height="80"></canvas>
+      </section>
+      <!-- Environment Tips Widget -->
+  <style>
+    @keyframes fade-in-up {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in-up {
+      animation: fade-in-up 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    @keyframes fade-in {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+    .animate-fade-in {
+      animation: fade-in 1.2s ease;
+    }
+    @keyframes spin-slow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .animate-spin-slow {
+      animation: spin-slow 12s linear infinite;
+    }
+    .widget {
+      box-shadow: 0 4px 32px 0 rgba(16,185,129,0.10), 0 1.5px 4px 0 rgba(0,0,0,0.10);
+    }
+  </style>
+    </div>
+  </div>
+  <!-- Chart.js Data Injection -->
+  <script id="hourly-usage-data" type="application/json">{{ hourly_usage|tojson|safe }}</script>
+  <script id="week-dates-data" type="application/json">{{ week_dates|tojson|safe }}</script>
+  <script id="daily-usage-data" type="application/json">{{ daily_usage|tojson|safe }}</script>
+  <script id="monthly-usage-data" type="application/json">{{ monthly_usage|tojson|safe }}</script>
+  <script id="monthly-growth-data" type="application/json">{{ monthly_growth|tojson|safe }}</script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script type="text/javascript">
+    // Parse data from JSON script tags (initial load)
+    let hourlyUsage = JSON.parse(document.getElementById('hourly-usage-data').textContent);
+    let weekDates = JSON.parse(document.getElementById('week-dates-data').textContent);
+    let dailyUsage = JSON.parse(document.getElementById('daily-usage-data').textContent);
+    let monthlyUsage = JSON.parse(document.getElementById('monthly-usage-data').textContent);
+    let monthlyGrowth = JSON.parse(document.getElementById('monthly-growth-data').textContent);
+    const hourlyLabels = Array.from({length: 24}, (_, i) => `${i}:00`);
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    // Track selected day/week/month for interactivity
+    let initialWeekdays = [...weekDates]
+    let initialDailyUsage = [...dailyUsage]
+    let initialHourlyUsage = [...hourlyUsage]
+    let selectedDay = weekDates[weekDates.length - 1]; // default: today
+    let selectedWeekStart = weekDates[0];
+    let selectedYear = new Date().getFullYear();
+    let selectedMonth = new Date().getMonth();
+
+    // Chart.js gradient helper
+    function createGradient(ctx, color1, color2) {
+      const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+      gradient.addColorStop(0, color1);
+      gradient.addColorStop(1, color2);
+      return gradient;
+    }
+
+    // Hourly (daily) usage chart
+    const hourlyCtx = document.getElementById('hourlyChart').getContext('2d');
+    const hourlyChart = new Chart(hourlyCtx, {
+      type: 'bar',
+      data: {
+        labels: hourlyLabels,
+        datasets: [{
+          label: 'kWh Used',
+          data: hourlyUsage,
+          backgroundColor: createGradient(hourlyCtx, 'rgba(16, 185, 129, 0.7)', 'rgba(16, 185, 129, 0.1)'),
+          borderColor: 'rgba(16, 185, 129, 1)',
+          borderWidth: 2,
+          borderRadius: 8
+        }]
+      },
+      options: {
+        plugins: {
+          title: {
+            display: true,
+            text: `Daily Usage — ${selectedDay}`,
+            color: '#e5e7eb',
+            font: { size: 20 }
+          },
+          legend: { labels: { color: '#e5e7eb' } },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            titleColor: '#10B981',
+            bodyColor: '#FFFFFF',
+            borderColor: '#10B981',
+            borderWidth: 1,
+            callbacks: {
+              title: function(context) {
+                return `Hour: ${context[0].label}`;
+              }
+            }
+          }
+        },
+        scales: {
+          y: { beginAtZero: true, ticks: { color: '#e5e7eb' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+          x: { ticks: { color: '#e5e7eb' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+        },
+        responsive: true
+      }
+    });
+
+    // Weekly usage chart with navigation
+    const weeklyCtx = document.getElementById('weeklyChart').getContext('2d');
+    const weeklyChart = new Chart(weeklyCtx, {
+      type: 'bar',
+      data: {
+        labels: weekDates,
+        datasets: [{
+          label: 'kWh Used',
+          data: dailyUsage,
+          backgroundColor: createGradient(weeklyCtx, 'rgba(59, 130, 246, 0.7)', 'rgba(59, 130, 246, 0.1)'),
+          borderColor: 'rgba(59, 130, 246, 1)',
+          borderWidth: 2,
+          borderRadius: 8
+        }]
+      },
+      options: {
+        onClick: async (e, elements) => {
+          if (elements.length > 0) {
+            const idx = elements[0].index;
+            selectedDay = weekDates[idx];
+            // Fetch hourly usage for selected day
+            const res = await fetch(`/api/hourly_usage?date=${selectedDay}`);
+            if (res.ok) {
+              const data = await res.json();
+              hourlyChart.data.datasets[0].data = data.hourly_usage;
+              hourlyChart.options.plugins.title.text = `Daily Usage — ${selectedDay}`;
+              hourlyChart.update();
+            }
+          }
+        },
+        plugins: { 
+          legend: { labels: { color: '#e5e7eb' } },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            titleColor: '#3B82F6',
+            bodyColor: '#FFFFFF',
+            borderColor: '#3B82F6',
+            borderWidth: 1,
+            callbacks: {
+              title: function(context) {
+                return `Date: ${context[0].label}`;
+              }
+            }
+          }
+        },
+        scales: {
+          y: { beginAtZero: true, ticks: { color: '#e5e7eb' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+          x: { ticks: { color: '#e5e7eb' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+        },
+        responsive: true
+      }
+    });
+
+    // Add week navigation buttons
+    const weeklySection = document.getElementById('weeklyChart').parentElement;
+    const navDiv = document.createElement('div');
+    navDiv.className = 'flex justify-between items-center mb-2';
+    navDiv.innerHTML = `
+      <button id="prevWeekBtn" class="bg-green-700 hover:bg-green-800 text-white px-3 py-1 rounded">&larr; Prev Week</button>
+      <button id="resetBtn" class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded">Today</button>
+      <button id="nextWeekBtn" class="bg-green-700 hover:bg-green-800 text-white px-3 py-1 rounded disabled:bg-gray-500 disabled:cursor-not-allowed">Next Week &rarr;</button>
+    `;
+    weeklySection.insertBefore(navDiv, weeklySection.firstChild);
+
+    function updateWeeklyNavButtons() {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const currentWeekEnd = new Date(selectedWeekStart);
+      currentWeekEnd.setDate(currentWeekEnd.getDate() + 6);
+
+      document.getElementById('nextWeekBtn').disabled = currentWeekEnd >= today;
+    }
+
+    document.getElementById('prevWeekBtn').onclick = async () => {
+      const prev = new Date(selectedWeekStart);
+      prev.setDate(prev.getDate() - 7);
+      const prevStr = prev.toISOString().slice(0, 10);
+      const res = await fetch(`/api/weekly_usage?start_date=${prevStr}`);
+      if (res.ok) {
+        const data = await res.json();
+        weekDates = data.week_dates;
+        dailyUsage = data.daily_usage;
+        weeklyChart.data.labels = weekDates;
+        weeklyChart.data.datasets[0].data = dailyUsage;
+        weeklyChart.update();
+        selectedWeekStart = weekDates[0];
+        updateWeeklyNavButtons();
+      }
+    };
+
+    document.getElementById('nextWeekBtn').onclick = async () => {
+      const next = new Date(selectedWeekStart);
+      next.setDate(next.getDate() + 7);
+      const nextStr = next.toISOString().slice(0, 10);
+      const res = await fetch(`/api/weekly_usage?start_date=${nextStr}`);
+      if (res.ok) {
+        const data = await res.json();
+        weekDates = data.week_dates;
+        dailyUsage = data.daily_usage;
+        weeklyChart.data.labels = weekDates;
+        weeklyChart.data.datasets[0].data = dailyUsage;
+        weeklyChart.update();
+        selectedWeekStart = weekDates[0];
+        updateWeeklyNavButtons();
+      }
+    };
+
+    document.getElementById('resetBtn').onclick = async () => {
+      const today = new Date();
+      const todayStr = today.toISOString().slice(0, 10);
+
+      // Fetch and update weekly chart to current week
+      const weeklyRes = await fetch(`/api/weekly_usage?start_date=${todayStr}`);
+      if (weeklyRes.ok) {
+        const data = await weeklyRes.json();
+        weekDates = data.week_dates;
+        dailyUsage = data.daily_usage;
+        weeklyChart.data.labels = weekDates;
+        weeklyChart.data.datasets[0].data = dailyUsage;
+        weeklyChart.update();
+        selectedWeekStart = weekDates[0];
+        updateWeeklyNavButtons();
+      }
+
+      // Fetch and update hourly chart to today
+      const hourlyRes = await fetch(`/api/hourly_usage?date=${todayStr}`);
+      if (hourlyRes.ok) {
+        const data = await hourlyRes.json();
+        hourlyUsage = data.hourly_usage;
+        selectedDay = todayStr;
+        hourlyChart.data.datasets[0].data = hourlyUsage;
+        hourlyChart.options.plugins.title.text = `Daily Usage — ${selectedDay}`;
+        hourlyChart.update();
+      }
+    };
+
+    // Initial check for the next week button state
+    updateWeeklyNavButtons();
+
+    // Yearly usage chart
+    const yearlyCtx = document.getElementById('yearlyChart').getContext('2d');
+    const yearlyChart = new Chart(yearlyCtx, {
+      type: 'bar',
+      data: {
+        labels: months,
+        datasets: [{
+          label: 'kWh Used',
+          data: monthlyUsage,
+          backgroundColor: monthlyGrowth.map(g => g > 0 ? createGradient(yearlyCtx, 'rgba(220, 38, 38, 0.7)', 'rgba(220, 38, 38, 0.1)') : createGradient(yearlyCtx, 'rgba(16, 185, 129, 0.7)', 'rgba(16, 185, 129, 0.1)')),
+          borderColor: monthlyGrowth.map(g => g > 0 ? 'rgba(220, 38, 38, 1)' : 'rgba(16, 185, 129, 1)'),
+          borderWidth: 2,
+          borderRadius: 8
+        }]
+      },
+      options: {
+        plugins: {
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            titleColor: '#FFFFFF',
+            bodyColor: '#FFFFFF',
+            borderColor: 'rgba(255, 255, 255, 0.5)',
+            borderWidth: 1,
+            callbacks: {
+              title: function(context) {
+                return `Month: ${context[0].label}`;
+              },
+              label: function(context) {
+                const idx = context.dataIndex;
+                const growth = monthlyGrowth[idx];
+                return `${context.dataset.label}: ${context.parsed.y} kWh (${growth > 0 ? '🔼' : '🔽'} ${growth}%)`;
+              }
+            }
+          },
+          legend: { labels: { color: '#e5e7eb' } }
+        },
+        onClick: async (e, elements) => {
+          if (elements.length > 0) {
+            const idx = elements[0].index;
+            selectedMonth = idx;
+            // Get first day of selected month
+            const d = new Date(selectedYear, idx, 1);
+            const startStr = d.toISOString().slice(0, 10);
+            const res = await fetch(`/api/weekly_usage?start_date=${startStr}`);
+            if (res.ok) {
+              const data = await res.json();
+              weekDates = data.week_dates;
+              dailyUsage = data.daily_usage;
+              weeklyChart.data.labels = weekDates;
+              weeklyChart.data.datasets[0].data = dailyUsage;
+              weeklyChart.options.plugins.title.text = `Weekly Usage — ${months[selectedMonth]}`;
+              weeklyChart.update();
+              selectedWeekStart = weekDates[0];
+            }
+          }
+        },
+        scales: {
+          y: { beginAtZero: true, ticks: { color: '#e5e7eb' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+          x: { ticks: { color: '#e5e7eb' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+        },
+        responsive: true
+      }
+    });
+
+    // Real-time update function
+    async function updateCharts() {
+      try {
+        const res = await fetch('/api/usage_data');
+        if (!res.ok) return;
+        const data = await res.json();
+        // Only update if on today
+        if (selectedDay === weekDates[weekDates.length - 1]) {
+          hourlyChart.data.datasets[0].data = data.hourly_usage;
+          hourlyChart.options.plugins.title.text = `Daily Usage — ${selectedDay}`;
+          hourlyChart.update();
+        }
+        weeklyChart.data.labels = data.week_dates;
+        weeklyChart.data.datasets[0].data = data.daily_usage;
+        weeklyChart.update();
+        yearlyChart.data.datasets[0].data = data.monthly_usage;
+        yearlyChart.data.datasets[0].backgroundColor = data.monthly_growth.map(g => g > 0 ? createGradient(yearlyCtx, 'rgba(220, 38, 38, 0.7)', 'rgba(220, 38, 38, 0.1)') : createGradient(yearlyCtx, 'rgba(16, 185, 129, 0.7)', 'rgba(16, 185, 129, 0.1)'));
+        yearlyChart.data.datasets[0].borderColor = data.monthly_growth.map(g => g > 0 ? 'rgba(220, 38, 38, 1)' : 'rgba(16, 185, 129, 1)');
+        yearlyChart.update();
+      } catch (e) { /* ignore */ }
+    }
+    setInterval(updateCharts, 30000); // Update every 30 seconds
+  </script>
+{% endblock %}
+</html>

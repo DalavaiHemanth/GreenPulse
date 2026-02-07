@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block title %}My Consumption - Green Pulse{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-4 md:p-8">
+    <!-- Header -->
+    <div class="text-center mb-10">
+        <h1 class="text-4xl font-bold text-green-300 tracking-wider">My Monthly Consumption</h1>
+        <p class="text-green-100/70 mt-2">An overview of your electricity usage, costs, and tariff slabs.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left Column: Current Month & Slabs -->
+        <div class="lg:col-span-2 flex flex-col gap-8">
+            <!-- Current Month's Overview -->
+            <div class="bg-gray-900/50 backdrop-blur-xl rounded-3xl shadow-2xl p-6">
+                <h2 class="text-2xl font-semibold text-white mb-4 flex items-center"><i class="fas fa-bolt mr-3 text-yellow-400"></i>Current Month's Snapshot</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-center">
+                    <div class="bg-blue-900/40 p-6 rounded-2xl">
+                        <p class="text-sm text-blue-200/80">Total Usage</p>
+                        <p class="text-4xl font-bold text-white">{{ '%.2f'|format(total_kwh) }} <span class="text-xl font-medium">kWh</span></p>
+                    </div>
+                    <div class="bg-green-900/40 p-6 rounded-2xl">
+                        <p class="text-sm text-green-200/80">Estimated Cost</p>
+                        <p class="text-4xl font-bold text-white">₹ {{ '%.2f'|format(estimated_cost) }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slab Breakdown -->
+            <div class="bg-gray-900/50 backdrop-blur-xl rounded-3xl shadow-2xl p-6">
+                <h2 class="text-2xl font-semibold text-white mb-1">Tariff Slabs Breakdown</h2>
+                <p class="text-sm text-gray-400 mb-6">Your cost is calculated based on these slabs for <span class="font-bold text-green-300">{{ user_state if user_state else 'your region' }}</span>.</p>
+                <div class="space-y-3">
+                    {% for slab in user_slabs %}
+                    <div class="p-4 rounded-lg transition-all duration-300 {% if loop.index == current_slab_idx %}bg-green-500/20 border-2 border-green-400 scale-105{% else %}bg-gray-800/60 border border-gray-700{% endif %}">
+                        <div class="flex justify-between items-center">
+                            <div class="font-bold text-lg text-white">
+                                Slab {{ loop.index }}
+                                {% if loop.index == current_slab_idx %}
+                                <span class="text-xs font-medium bg-green-400 text-gray-900 px-2 py-1 rounded-full ml-2">Current</span>
+                                {% endif %}
+                            </div>
+                            <div class="font-mono text-xl text-green-300">₹ {{ slab.rate }}/kWh</div>
+                        </div>
+                        <div class="text-sm text-gray-300 mt-1">
+                            {% if slab.end %}
+                                Up to {{ slab.end }} kWh
+                            {% else %}
+                                Above {{ slab.start }} kWh
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: History & Simulation -->
+        <div class="lg:col-span-1 flex flex-col gap-8">
+            <!-- Previous Months -->
+            <div class="bg-gray-900/50 backdrop-blur-xl rounded-3xl shadow-2xl p-6">
+                <h2 class="text-2xl font-semibold text-white mb-4 flex items-center"><i class="fas fa-history mr-3"></i>Usage History</h2>
+                <div class="h-48 mb-4">
+                    <canvas id="historyChart"></canvas>
+                </div>
+                <div class="space-y-4">
+                    {% for m in previous_months %}
+                    <div class="flex justify-between items-center bg-gray-800/50 p-3 rounded-lg">
+                        <span class="font-medium text-gray-300">{{ m.month }}</span>
+                        <div class="text-right">
+                            <p class="font-bold text-white">{{ '%.2f'|format(m.usage) }} kWh</p>
+                            <p class="text-sm text-green-300">₹ {{ '%.2f'|format(m.cost) }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Cost Simulator -->
+            {% if user_state and (user_state.lower() == 'andhra pradesh' or user_state.lower() == 'telangana') %}
+            <div class="bg-gray-900/50 backdrop-blur-xl rounded-3xl shadow-2xl p-6">
+                <h2 class="text-2xl font-semibold text-white mb-4 flex items-center"><i class="fas fa-calculator mr-3"></i>Cost Simulator</h2>
+                <form method="post" id="simSlabForm" class="space-y-4">
+                    {% set slabs_to_show = ap_slab_defs if user_state.lower() == 'andhra pradesh' else tg_slab_defs %}
+                    {% for slab in slabs_to_show %}
+                        {% if loop.index <= current_slab_idx %}
+                        <div class="flex items-center gap-3">
+                            <label class="w-20 text-sm text-gray-300">Slab {{ loop.index }}:</label>
+                            <input type="number" name="sim_slab_rate_{{loop.index0}}" min="0" step="0.01" value="{{ sim_slabs[loop.index0].rate if sim_slabs else slab.rate }}" class="flex-grow px-3 py-2 rounded-lg bg-gray-800/80 border border-blue-500 text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition-colors mt-4">Simulate Cost</button>
+                </form>
+                {% if simulated_cost is not none %}
+                    <div class="mt-6 text-center bg-blue-900/40 p-4 rounded-lg">
+                        <p class="text-sm text-blue-200/80">Simulated Cost</p>
+                        <p class="text-3xl font-bold text-white">₹ {{ '%.2f'|format(simulated_cost) }}</p>
+                    </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // History Chart
+        const historyCtx = document.getElementById('historyChart')?.getContext('2d');
+        if (historyCtx) {
+            const historyLabels = {{ previous_months|map(attribute='month')|reverse|list|tojson }};
+            const historyData = {{ previous_months|map(attribute='usage')|reverse|list|tojson }};
+            new Chart(historyCtx, {
+                type: 'bar',
+                data: {
+                    labels: historyLabels,
+                    datasets: [{
+                        label: 'Monthly Usage (kWh)',
+                        data: historyData,
+                        backgroundColor: 'rgba(34, 197, 94, 0.6)',
+                        borderColor: 'rgba(34, 197, 94, 1)',
+                        borderWidth: 1,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: true }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#a0aec0' } },
+                        x: { grid: { display: false }, ticks: { color: '#a0aec0' } }
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

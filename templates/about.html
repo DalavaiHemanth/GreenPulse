@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block title %}About - Green Pulse{% endblock %}
+{% block content %}
+<div class="min-h-screen bg-cover bg-center bg-fixed font-sans" style="background-image: url('/static/images/ab2_bg.jpg');">
+  <div class="container mx-auto px-4 py-24">
+    <div class="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-10 max-w-5xl mx-auto animate-fadeIn">
+      <div class="flex flex-col md:flex-row gap-12 items-center justify-between">
+        <div class="flex-1 flex flex-col gap-8">
+          <h1 class="text-5xl font-extrabold mb-2 tracking-wide drop-shadow-lg text-white">Green Pulse</h1>
+          <p class="text-lg mb-4 text-green-100">Green Pulse empowers users to monitor, analyze, and optimize their home energy usage, promoting sustainability and cost savings through smart analytics, appliance management, and actionable insights.</p>
+          <div class="mb-4">
+            <h2 class="text-2xl font-bold mb-2 flex items-center gap-2 text-purple-300">Contact</h2>
+            <span class="flex items-center gap-2 text-green-100">greenpulsergmcet@gmail.com</span>
+          </div>
+          <div class="mb-4">
+            <h2 class="text-2xl font-bold mb-2 flex items-center gap-2 text-purple-300">Our Mission</h2>
+            <p class="text-green-100">To help every household become energy efficient and environmentally responsible through technology and data-driven insights.</p>
+          </div>
+        </div>
+        <div class="flex-1 flex flex-col items-center justify-center relative">
+          <div id="admin-img" class="flex justify-center items-center">
+            <img id="admin-photo" src="/static/images/hemanth.jpg" alt="Hemanth" class="w-44 h-44 rounded-full border-8 border-purple-300 shadow-xl object-cover bg-gray-900" />
+          </div>
+          <div class="mt-8 text-center">
+            <span class="font-extrabold text-3xl drop-shadow-lg text-white" id="admin-name">Hemanth</span>
+            <div class="text-xl mt-2 font-semibold text-purple-300" id="admin-role">Lead Developer & Admin</div>
+            <div class="mt-4 text-lg text-green-100" id="admin-desc">Expert in backend, analytics, and system design. Passionate about sustainable technology and user empowerment.</div>
+          </div>
+          <button type="button" onclick="switchAdmin()" class="mt-8 px-8 py-3 rounded-xl font-bold shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-purple-400 bg-gradient-to-r from-purple-600 to-green-400 text-white">Switch Admin</button>
+        </div>
+      </div>
+      <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div>
+          <h2 class="text-2xl font-bold mb-4 text-purple-300">Technical Skills</h2>
+          <div id="skills-technical" class="flex gap-4 flex-wrap mb-6"><span class='px-4 py-2 rounded-lg font-semibold shadow bg-purple-900/30 text-purple-200'>Loading...</span></div>
+          <h2 class="text-2xl font-bold mb-4 text-purple-300">Soft Skills</h2>
+          <div id="skills-soft" class="flex gap-4 flex-wrap mb-6"><span class='px-4 py-2 rounded-lg font-semibold shadow bg-purple-900/30 text-purple-200'>Loading...</span></div>
+        </div>
+        <div>
+          <h2 class="text-2xl font-bold mb-4 text-purple-300">Skill Set</h2>
+          <div id="skills-set" class="flex gap-4 flex-wrap mb-6"><span class='px-4 py-2 rounded-lg font-semibold shadow bg-purple-900/30 text-purple-200'>Loading...</span></div>
+          <h2 class="text-2xl font-bold mb-4 text-purple-300">Languages</h2>
+          <div id="skills-languages" class="flex gap-4 flex-wrap mb-6"><span class='px-4 py-2 rounded-lg font-semibold shadow bg-purple-900/30 text-purple-200'>Loading...</span></div>
+        </div>
+      </div>
+      <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div>
+          <h2 class="text-2xl font-bold mb-4 text-purple-300">Education</h2>
+          <div id="skills-education" class="px-6 py-4 rounded-lg font-semibold shadow mb-2 bg-purple-900/30 text-purple-200">Loading...</div>
+          <div id="skills-education-years" class="px-6 py-2 rounded-lg font-semibold shadow bg-purple-900/30 text-purple-200">Loading...</div>
+        </div>
+        <div>
+          <h2 class="text-2xl font-bold mb-4 text-purple-300">Interests</h2>
+          <div id="skills-interests" class="flex gap-4 flex-wrap"><span class='px-4 py-2 rounded-lg font-semibold shadow bg-purple-900/30 text-purple-200'>Loading...</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Admin data
+    const admins = [
+      {
+        name: " Dalavai Hemanth",
+        photo: "/static/images/hemanth.jpg",
+        role: "Lead Developer & Admin",
+        desc: "Expert in backend, analytics, and system design. Passionate about sustainable technology and user empowerment.",
+        skillsTechnical: ["Python", "Flask", "SQL", "Data Analytics"],
+        skillsSoft: ["Leadership", "Problem Solving", "Teamwork"],
+        skillsSet: ["System Design", "Backend Development"],
+        skillsLanguages: ["English", "Telugu", "Hindi"],
+        education: "B.Tech, Computer Science(Data Science), RGMCET",
+        educationYears: "2023 - 2027",
+        interests: ["Data Science", "AI", "Smart Homes"]
+      },
+      {
+        name: "Kurakula Harshitha",
+        photo: "/static/images/admin2.jpg",
+        role: "Frontend Developer & Admin",
+        desc: "Expert in UI/UX, frontend development, and user experience. Passionate about design and seamless user interaction.",
+        skillsTechnical: ["HTML", "CSS", "JavaScript", "React"],
+        skillsSoft: ["Creativity", "Communication", "Empathy"],
+        skillsSet: ["UI/UX Design", "Frontend Development"],
+        skillsLanguages: ["English", "Telugu"],
+        education: "B.Tech, Computer Science(Data Science), RGMCET",
+        educationYears: "2023 - 2027",
+        interests: ["Design", "Travel", "Photography"]
+      }
+    ];
+    let currentAdmin = 0;
+    function animateSection(sectionId) {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.classList.remove('opacity-0');
+        el.classList.add('animate-fadeIn');
+      }
+    }
+    function updateAdminDetails() {
+      const admin = admins[currentAdmin];
+      document.getElementById('admin-name').textContent = admin.name;
+      document.getElementById('admin-photo').src = admin.photo;
+      document.getElementById('admin-photo').alt = admin.name;
+      document.getElementById('admin-role').textContent = admin.role;
+      document.getElementById('admin-desc').textContent = admin.desc;
+      document.getElementById('skills-technical').innerHTML = admin.skillsTechnical.map(skill => `<span class='px-4 py-2 rounded-lg font-semibold shadow bg-purple-900/30 text-purple-200 transition-all duration-300 hover:bg-green-400 hover:text-white scale-100 hover:scale-105'>${skill}</span>`).join(' ');
+      document.getElementById('skills-soft').innerHTML = admin.skillsSoft.map(skill => `<span class='px-4 py-2 rounded-lg font-semibold shadow bg-purple-900/30 text-purple-200 transition-all duration-300 hover:bg-green-400 hover:text-white scale-100 hover:scale-105'>${skill}</span>`).join(' ');
+      document.getElementById('skills-set').innerHTML = admin.skillsSet.map(skill => `<span class='px-4 py-2 rounded-lg font-semibold shadow bg-purple-900/30 text-purple-200 transition-all duration-300 hover:bg-green-400 hover:text-white scale-100 hover:scale-105'>${skill}</span>`).join(' ');
+      document.getElementById('skills-languages').innerHTML = admin.skillsLanguages.map(lang => `<span class='px-4 py-2 rounded-lg font-semibold shadow bg-purple-900/30 text-purple-200 transition-all duration-300 hover:bg-green-400 hover:text-white scale-100 hover:scale-105'>${lang}</span>`).join(' ');
+      document.getElementById('skills-education').textContent = admin.education;
+      document.getElementById('skills-education-years').textContent = admin.educationYears;
+      document.getElementById('skills-interests').innerHTML = admin.interests.map(interest => `<span class='px-4 py-2 rounded-lg font-semibold shadow bg-purple-900/30 text-purple-200 transition-all duration-300 hover:bg-green-400 hover:text-white scale-100 hover:scale-105'>${interest}</span>`).join(' ');
+      // Animate sections
+      animateSection('skills-technical');
+      animateSection('skills-soft');
+      animateSection('skills-set');
+      animateSection('skills-languages');
+      animateSection('skills-education');
+      animateSection('skills-education-years');
+      animateSection('skills-interests');
+    }
+    function switchAdmin() {
+      // Animate admin card out
+      const adminCard = document.getElementById('admin-img');
+      adminCard.classList.add('animate-fadeOut');
+      setTimeout(() => {
+        currentAdmin = (currentAdmin + 1) % admins.length;
+        updateAdminDetails();
+        adminCard.classList.remove('animate-fadeOut');
+        adminCard.classList.add('animate-fadeIn');
+        setTimeout(() => adminCard.classList.remove('animate-fadeIn'), 600);
+      }, 400);
+    }
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      [
+        'skills-technical', 'skills-soft', 'skills-set', 'skills-languages',
+        'skills-education', 'skills-education-years', 'skills-interests'
+      ].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('opacity-0');
+      });
+      updateAdminDetails();
+    });
+  </script>
+</div>
+{% endblock %}
